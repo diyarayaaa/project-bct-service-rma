@@ -1,0 +1,18 @@
+{
+  "storeName": "Best Computel",
+  "tagline": "Service & Warranty Center",
+  "address": "Jl. [Nama Jalan Toko Lengkap], [Kota/Kabupaten], [Provinsi]",
+  "phone": "0813-XXXX-XXXX",
+  "whatsapp": "0813-XXXX-XXXX",
+  "email": "bestcomputel@example.com",
+  "operationalHours": {
+    "weekdays": "Senin - Jumat : 09.00 - 17.00",
+    "saturday": "Sabtu : 09.00 - 15.00",
+    "sunday": "Minggu & Tanggal Merah : Libur"
+  },
+  "receiptTerms": [
+    "Pengambilan perangkat wajib menunjukkan Surat Tanda Terima / No RMA.",
+    "Perangkat yang tidak diambil lebih dari 30 hari setelah konfirmasi selesai bukan menjadi tanggung jawab kami atas segala risiko yang terjadi.",
+    "Mohon melakukan pengecekan perangkat secara teliti saat serah terima pengambilan."
+  ]
+}

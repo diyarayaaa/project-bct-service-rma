@@ -1,0 +1,7 @@
+Simpan file gambar logo Best Computel di folder ini dengan nama:
+logo.png (atau logo.jpg / logo.svg)
+
+File logo ini nantinya akan otomatis ditampilkan pada:
+1. Header Surat Tanda Terima (Cetak Thermal Kasir & Faktur A4)
+2. Header Dokumen Surat Jalan Vendor (A4)
+3. Header Navbar Aplikasi Web

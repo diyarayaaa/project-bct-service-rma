@@ -1,0 +1,66 @@
+[
+  {
+    "name": "AGRES ID BDG",
+    "aliasCode": "AGRES ID",
+    "location": "BDG",
+    "address": "Jl. [Alamat Lengkap Distributor Agres ID Bandung]",
+    "contactPerson": "PIC Agres",
+    "phone": "0812-XXXX-XXXX"
+  },
+  {
+    "name": "ASIA RAYA JKT",
+    "aliasCode": "ASIA RAYA",
+    "location": "JKT",
+    "address": "Jl. [Alamat Lengkap Distributor Asia Raya Jakarta]",
+    "contactPerson": "PIC Asia Raya",
+    "phone": "0812-XXXX-XXXX"
+  },
+  {
+    "name": "SC COMP JKT",
+    "aliasCode": "SC COMP",
+    "location": "JKT",
+    "address": "Jl. [Alamat Lengkap SC Comp Jakarta]",
+    "contactPerson": "PIC SC Comp",
+    "phone": "0812-XXXX-XXXX"
+  },
+  {
+    "name": "DTG BANDUNG BDG",
+    "aliasCode": "DTG BANDUNG",
+    "location": "BDG",
+    "address": "Jl. [Alamat Lengkap DTG Bandung]",
+    "contactPerson": "PIC DTG",
+    "phone": "0812-XXXX-XXXX"
+  },
+  {
+    "name": "PAK AMIN (ELITE KOMPUTER)",
+    "aliasCode": "ELITE KOMPUTER",
+    "location": "BDG",
+    "address": "Jl. [Alamat Lengkap Elite Komputer Bandung]",
+    "contactPerson": "Pak Amin",
+    "phone": "0812-XXXX-XXXX"
+  },
+  {
+    "name": "CCK",
+    "aliasCode": "CCK",
+    "location": "JKT",
+    "address": "Jl. [Alamat Lengkap CCK Jakarta]",
+    "contactPerson": "PIC CCK",
+    "phone": "0812-XXXX-XXXX"
+  },
+  {
+    "name": "INTERAKSI CIPTA",
+    "aliasCode": "INTERAKSI CIPTA",
+    "location": "JKT",
+    "address": "Jl. [Alamat Lengkap Interaksi Cipta Jakarta]",
+    "contactPerson": "PIC Interaksi Cipta",
+    "phone": "0812-XXXX-XXXX"
+  },
+  {
+    "name": "PT. ASIA GLOBAL SUKSESINDO (AGS)",
+    "aliasCode": "AGS",
+    "location": "JKT",
+    "address": "Jl. [Alamat Lengkap PT. AGS Jakarta]",
+    "contactPerson": "PIC AGS",
+    "phone": "0812-XXXX-XXXX"
+  }
+]
