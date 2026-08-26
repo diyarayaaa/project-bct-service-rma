@@ -298,6 +298,35 @@ export default function DashboardClient({
             </span>
           </div>
         </div>
+
+        {/* Card 4: Unit Masuk Hari Ini (Bento Grid Col-Span-4 / Full Row) */}
+        <div className="bg-gradient-to-r from-emerald-50/80 via-white to-white dark:from-emerald-950/20 dark:via-slate-900 dark:to-slate-900 border border-emerald-200/80 dark:border-emerald-900/60 p-5 rounded-2xl shadow-xs hover:shadow-md hover:border-emerald-500/40 transition-all duration-300 col-span-1 md:col-span-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className="p-3 bg-emerald-100 dark:bg-emerald-950/80 rounded-xl text-emerald-600 dark:text-emerald-400">
+              <Sparkles className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                Registrasi Unit Masuk Hari Ini
+              </p>
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-extrabold text-slate-900 dark:text-slate-50">
+                  {data.metrics.totalTodayIntake}
+                </span>
+                <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">
+                  Unit Baru Terdaftar
+                </span>
+              </div>
+            </div>
+          </div>
+          <Button
+            onClick={() => router.push("/intake")}
+            size="sm"
+            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs h-8.5 px-3.5 rounded-xl shadow-xs self-start sm:self-center"
+          >
+            + Input Tiket Intake Baru
+          </Button>
+        </div>
       </div>
 
       {/* Modern Filter Row: Fully Rounded Search Pill & Segmented Control Tabs */}
