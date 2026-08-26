@@ -14,8 +14,12 @@ import {
   Plus,
   DollarSign,
   Printer,
-  Share2,
+  MessageCircle,
+  Copy,
+  Send,
 } from "lucide-react";
+import { formatWhatsAppNumber, getReceiptWhatsAppTemplate } from "@/lib/whatsapp";
+import { sendWhatsAppNotificationAction } from "@/actions/whatsapp";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 
 interface Technician {
@@ -125,6 +129,46 @@ export default function IntakeClient({
   // Success Dialog Modal
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
   const [createdTicketNumber, setCreatedTicketNumber] = useState("");
+
+  const handleSendWA = (method: "direct" | "gateway" | "copy") => {
+    const selectedTech = technicians.find((t) => t.id === technicianId);
+    const tempTicket = {
+      ticketNumber: createdTicketNumber,
+      entryDate: entryDate,
+      serviceType: serviceType,
+      customer: {
+        name: customerName,
+        phone: customerPhone,
+      },
+      deviceType: deviceType,
+      deviceName: deviceName,
+      serialNumber: serialNumber,
+      complaint: complaint,
+      accessories: selectedAccessories.concat(extraAccessories),
+      estimatedCompletionDate: estimatedCompletionDate || null,
+      technician: selectedTech ? { fullName: selectedTech.fullName } : null,
+    };
+
+    const formattedPhone = formatWhatsAppNumber(customerPhone);
+    const message = getReceiptWhatsAppTemplate(tempTicket);
+
+    if (method === "copy") {
+      navigator.clipboard.writeText(message);
+      toast.success("Teks notifikasi WhatsApp berhasil disalin!");
+    } else if (method === "direct") {
+      const url = `https://api.whatsapp.com/send?phone=${formattedPhone}&text=${encodeURIComponent(message)}`;
+      window.open(url, "_blank");
+    } else if (method === "gateway") {
+      startTransition(async () => {
+        const res = await sendWhatsAppNotificationAction(formattedPhone, message);
+        if (res.success) {
+          toast.success("Notifikasi WhatsApp berhasil dikirim melalui Gateway!");
+        } else {
+          toast.error(res.error || "Gagal mengirim notifikasi WhatsApp.");
+        }
+      });
+    }
+  };
 
   // Prefix Customer Name
   const formatNameOnBlur = () => {
@@ -718,16 +762,38 @@ export default function IntakeClient({
                 Faktur A4
               </Button>
             </div>
-            <Button
-              variant="outline"
-              onClick={() => {
-                toast.info("Integrasi Direct WA Client sedang disiapkan untuk Issue #09");
-              }}
-              className="w-full border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 flex items-center justify-center gap-2 hover:bg-zinc-100 dark:hover:bg-zinc-900"
-            >
-              <Share2 className="h-4 w-4 text-emerald-500" />
-              Kirim WA Serah Terima Pelanggan
-            </Button>
+            <div className="space-y-2 border-t border-zinc-100 dark:border-zinc-800 pt-3">
+              <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest block mb-1">
+                Kirim Notifikasi WhatsApp
+              </label>
+              <div className="grid grid-cols-3 gap-2">
+                <Button
+                  onClick={() => handleSendWA("direct")}
+                  variant="outline"
+                  className="border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 font-bold flex items-center justify-center gap-1.5 text-xs py-2 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+                >
+                  <MessageCircle className="h-3.5 w-3.5 text-emerald-500" />
+                  wa.me
+                </Button>
+                <Button
+                  onClick={() => handleSendWA("gateway")}
+                  variant="outline"
+                  disabled={isPending}
+                  className="border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 font-bold flex items-center justify-center gap-1.5 text-xs py-2 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+                >
+                  <Send className="h-3.5 w-3.5 text-blue-500" />
+                  Gateway
+                </Button>
+                <Button
+                  onClick={() => handleSendWA("copy")}
+                  variant="outline"
+                  className="border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 font-bold flex items-center justify-center gap-1.5 text-xs py-2 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+                >
+                  <Copy className="h-3.5 w-3.5 text-indigo-500" />
+                  Salin
+                </Button>
+              </div>
+            </div>
           </div>
 
           <DialogFooter className="sm:justify-between gap-2">

@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, ClipboardList, User, Calendar, Edit, Tag, Printer } from "lucide-react";
+import { Search, ClipboardList, User, Calendar, Edit, Tag, Printer, MessageCircle } from "lucide-react";
 import StatusDialog from "@/components/tickets/status-dialog";
+import WhatsAppDialog from "@/components/tickets/whatsapp-dialog";
 
 interface Customer {
   id: string;
@@ -62,6 +63,13 @@ export default function TicketsClient({ initialTickets, vendors }: TicketsClient
   const [search, setSearch] = useState("");
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isWADialogOpen, setIsWADialogOpen] = useState(false);
+  const [selectedWATicket, setSelectedWATicket] = useState<Ticket | null>(null);
+
+  const handleOpenWADialog = (ticket: Ticket) => {
+    setSelectedWATicket(ticket);
+    setIsWADialogOpen(true);
+  };
 
   // Filter tickets based on search query
   const filteredTickets = tickets.filter((t) => {
@@ -238,6 +246,14 @@ export default function TicketsClient({ initialTickets, vendors }: TicketsClient
                             </button>
                           </div>
                         </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleOpenWADialog(ticket)}
+                          className="h-8 w-8 text-zinc-400 hover:text-emerald-500 dark:hover:text-emerald-400 border border-zinc-200 dark:border-zinc-800"
+                        >
+                          <MessageCircle className="h-4 w-4" />
+                        </Button>
                       </div>
                     </td>
                   </tr>
@@ -256,6 +272,15 @@ export default function TicketsClient({ initialTickets, vendors }: TicketsClient
           ticket={selectedTicket}
           vendors={vendors}
           onSuccess={handleStatusUpdateSuccess}
+        />
+      )}
+
+      {selectedWATicket && (
+        <WhatsAppDialog
+          key={selectedWATicket.id}
+          isOpen={isWADialogOpen}
+          onOpenChange={setIsWADialogOpen}
+          ticket={selectedWATicket}
         />
       )}
     </div>
