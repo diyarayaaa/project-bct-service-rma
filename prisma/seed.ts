@@ -20,6 +20,8 @@ async function main() {
     { username: "derida", fullName: "Derida", role: "TECHNICIAN" as const, password: "derida123" },
     { username: "anzar", fullName: "Anzar", role: "TECHNICIAN" as const, password: "anzar123" },
     { username: "admin", fullName: "Administrator", role: "ADMIN" as const, password: "password123" },
+    { username: "ADMINBCT", fullName: "Admin Best Computel", role: "ADMIN" as const, password: "ADMIN123" },
+    { username: "adminbct", fullName: "Admin Best Computel", role: "ADMIN" as const, password: "ADMIN123" },
     { username: "sales", fullName: "Sales BCT", role: "SALES" as const, password: "password123" },
   ];
 
