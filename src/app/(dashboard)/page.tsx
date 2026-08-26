@@ -1,41 +1,38 @@
-/**
- * Dashboard Home Page
- *
- * Halaman utama dashboard yang menampilkan ringkasan status service.
- * Akan diimplementasikan lebih lanjut di Issue #12.
- */
+import { getDashboardDataAction } from "@/actions/dashboard";
+import { db } from "@/lib/db";
+import DashboardClient from "./dashboard-client";
 
-export default function DashboardPage() {
+export const revalidate = 0;
+
+export default async function DashboardPage() {
+  const res = await getDashboardDataAction();
+  const initialData = res.success && res.data ? res.data : {
+    metrics: {
+      totalActiveService: 0,
+      totalCompletedUnclaimed: 0,
+      totalVendorActive: 0,
+      totalTodayIntake: 0,
+    },
+    activeServices: [],
+    completedUnclaimed: [],
+    technicians: ["Wandi", "Satryo", "Derida", "Anzar"],
+  };
+
+  const vendors = await db.vendor.findMany({
+    select: {
+      id: true,
+      name: true,
+      aliasCode: true,
+    },
+    orderBy: {
+      name: "asc",
+    },
+  });
+
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold tracking-tight">
-          Selamat Datang di BCT Service & RMA
-        </h2>
-        <p className="text-gray-500 dark:text-gray-400">
-          Dashboard monitoring dan manajemen service perangkat.
-        </p>
-      </div>
-
-      {/* Placeholder cards - akan diimplementasikan di Issue #12 */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950">
-          <h3 className="text-sm font-medium text-gray-500">Total Tiket Hari Ini</h3>
-          <p className="mt-2 text-3xl font-bold">0</p>
-        </div>
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950">
-          <h3 className="text-sm font-medium text-gray-500">Sedang Diproses</h3>
-          <p className="mt-2 text-3xl font-bold">0</p>
-        </div>
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950">
-          <h3 className="text-sm font-medium text-gray-500">Selesai</h3>
-          <p className="mt-2 text-3xl font-bold">0</p>
-        </div>
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-950">
-          <h3 className="text-sm font-medium text-gray-500">Di Vendor</h3>
-          <p className="mt-2 text-3xl font-bold">0</p>
-        </div>
-      </div>
-    </div>
+    <DashboardClient
+      initialData={initialData}
+      vendors={vendors}
+    />
   );
 }
