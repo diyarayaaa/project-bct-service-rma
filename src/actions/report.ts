@@ -41,11 +41,32 @@ export async function getOperationalReportDataAction(
     const start = new Date(`${dateStr}T00:00:00+07:00`);
     const end = new Date(`${dateStr}T23:59:59.999+07:00`);
 
+    // Strict filter for RMA: General Customers only (not internal stock)
+    const rmaCustomerFilter = {
+      customer: {
+        isInternalStock: false,
+        NOT: [
+          { name: { contains: "STOCK BCT", mode: "insensitive" as const } },
+          { name: { contains: "GHITP", mode: "insensitive" as const } },
+          { name: { contains: "STOK", mode: "insensitive" as const } },
+        ],
+      },
+    };
+
+    // Status filter for vendor active: ALIH_SERVICE for SERVICE or PROSES_GARANSI for GARANSI
+    const vendorActiveStatusFilter = {
+      OR: [
+        { serviceType: "SERVICE" as const, status: "ALIH_SERVICE" as const },
+        { serviceType: "GARANSI" as const, status: "PROSES_GARANSI" as const },
+      ],
+    };
+
     // 1. BARANG KE BANDUNG [TGL HARI INI]
-    // Filter: serviceType = GARANSI, vendorSentDate = Hari Ini, vendor.location = BDG
+    // Filter: vendorSentDate = Hari Ini, vendor.location = BDG
     const block1 = await db.serviceTicket.findMany({
       where: {
-        serviceType: "GARANSI",
+        ...rmaCustomerFilter,
+        ...vendorActiveStatusFilter,
         vendorSentDate: {
           gte: start,
           lte: end,
@@ -82,21 +103,12 @@ export async function getOperationalReportDataAction(
       },
     });
 
-    // Internal stock criteria: customer name must contain STOCK BCT, STOK BCT, or GHITP
-    const internalStockFilter = {
-      OR: [
-        { customer: { name: { contains: "STOCK BCT", mode: "insensitive" as const } } },
-        { customer: { name: { contains: "STOK BCT", mode: "insensitive" as const } } },
-        { customer: { name: { contains: "GHITP", mode: "insensitive" as const } } },
-      ],
-    };
-
     // 2. BARANG DI VENDOR BDG
-    // Filter: customer = internal stock, status = PROSES_GARANSI, vendor.location = BDG
+    // Filter: general customers, status ALIH_SERVICE/PROSES_GARANSI, vendor.location = BDG
     const block2 = await db.serviceTicket.findMany({
       where: {
-        ...internalStockFilter,
-        status: "PROSES_GARANSI",
+        ...rmaCustomerFilter,
+        ...vendorActiveStatusFilter,
         vendor: {
           location: "BDG",
         },
@@ -130,11 +142,11 @@ export async function getOperationalReportDataAction(
     });
 
     // 3. BARANG DI VENDOR JKT
-    // Filter: customer = internal stock, status = PROSES_GARANSI, vendor.location = JKT
+    // Filter: general customers, status ALIH_SERVICE/PROSES_GARANSI, vendor.location = JKT
     const block3 = await db.serviceTicket.findMany({
       where: {
-        ...internalStockFilter,
-        status: "PROSES_GARANSI",
+        ...rmaCustomerFilter,
+        ...vendorActiveStatusFilter,
         vendor: {
           location: "JKT",
         },

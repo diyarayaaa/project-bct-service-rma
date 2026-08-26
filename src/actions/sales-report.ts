@@ -44,19 +44,41 @@ export async function getSalesReportDataAction(
     const start = new Date(`${dateStr}T00:00:00+07:00`);
     const end = new Date(`${dateStr}T23:59:59.999+07:00`);
 
-    // Internal stock criteria: customer name must contain STOCK BCT, STOK BCT, or GHITP
-    const internalStockFilter = {
+    // Strict filter for Sales: ONLY internal stock (STOCK BCT / GHITP) and NOT regular customer (TN/NY.)
+    const salesCustomerFilter = {
+      customer: {
+        AND: [
+          {
+            OR: [
+              { isInternalStock: true },
+              { name: { contains: "STOCK BCT", mode: "insensitive" as const } },
+              { name: { contains: "GHITP", mode: "insensitive" as const } },
+              { name: { contains: "STOK", mode: "insensitive" as const } },
+            ],
+          },
+          {
+            name: {
+              not: {
+                contains: "TN/NY",
+              },
+            },
+          },
+        ],
+      },
+    };
+
+    // Status filter for vendor active: ALIH_SERVICE for SERVICE or PROSES_GARANSI for GARANSI
+    const vendorActiveStatusFilter = {
       OR: [
-        { customer: { name: { contains: "STOCK BCT", mode: "insensitive" as const } } },
-        { customer: { name: { contains: "STOK BCT", mode: "insensitive" as const } } },
-        { customer: { name: { contains: "GHITP", mode: "insensitive" as const } } },
+        { serviceType: "SERVICE" as const, status: "ALIH_SERVICE" as const },
+        { serviceType: "GARANSI" as const, status: "PROSES_GARANSI" as const },
       ],
     };
 
     // 1. GARANSIAN SELESAI [TGL HARI INI] (STOK BCT/GHITP)
     const section1 = await db.serviceTicket.findMany({
       where: {
-        ...internalStockFilter,
+        ...salesCustomerFilter,
         status: {
           in: ["SELESAI_BELUM_DIAMBIL", "SELESAI_DAN_DIAMBIL"],
         },
@@ -99,8 +121,8 @@ export async function getSalesReportDataAction(
     // 2. GARANSIAN DI VENDOR BDG (STOK BCT/GHITP)
     const section2 = await db.serviceTicket.findMany({
       where: {
-        ...internalStockFilter,
-        status: "PROSES_GARANSI",
+        ...salesCustomerFilter,
+        ...vendorActiveStatusFilter,
         vendor: {
           location: "BDG",
         },
@@ -138,8 +160,8 @@ export async function getSalesReportDataAction(
     // 3. GARANSIAN DI VENDOR JKT (STOK BCT/GHITP)
     const section3 = await db.serviceTicket.findMany({
       where: {
-        ...internalStockFilter,
-        status: "PROSES_GARANSI",
+        ...salesCustomerFilter,
+        ...vendorActiveStatusFilter,
         vendor: {
           location: "JKT",
         },
@@ -177,7 +199,7 @@ export async function getSalesReportDataAction(
     // 4. GARANSIAN BELUM DIPROSES (STOK BCT/GHITP)
     const section4 = await db.serviceTicket.findMany({
       where: {
-        ...internalStockFilter,
+        ...salesCustomerFilter,
         status: {
           in: ["PROSES_SERVICE", "PENDING_SERVICE"],
         },
