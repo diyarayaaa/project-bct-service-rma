@@ -56,4 +56,4 @@ Daftar issue perencanaan implementasi sistem **Best Computel Service & RMA** tel
 11. 📈 **[Issue #11: Sales WhatsApp Report Generator (`LAPORAN_WA_SALES`)](file:///c:/Users/I%27m%20Not%20Diyarayaa/Desktop/GITHUB/project-bct-service-rma/issues/issue-11-sales-whatsapp-report.md)** ✅ [SELESAI]
 12. 🖥️ **[Issue #12: Dashboard Monitoring & Antrian Kerja Teknisi](file:///c:/Users/I%27m%20Not%20Diyarayaa/Desktop/GITHUB/project-bct-service-rma/issues/issue-12-dashboard-monitoring-antrian.md)** ✅ [SELESAI]
 13. 📜 **[Issue #13: Audit Trail & Activity Logging](file:///c:/Users/I%27m%20Not%20Diyarayaa/Desktop/GITHUB/project-bct-service-rma/issues/issue-13-audit-trail-activity-logging.md)** ✅ [SELESAI]
-14. ✏️ **[Issue #14: Full Data Editing & Master Maintenance (Edit Tiket, Customer, Vendor, & Preset)](file:///c:/Users/I%27m%20Not%20Diyarayaa/Desktop/GITHUB/project-bct-service-rma/issues/issue-14-edit-data-management.md)**
+14. ✏️ **[Issue #14: Full Data Editing & Master Maintenance (Edit Tiket, Customer, Vendor, & Preset)](file:///c:/Users/I%27m%20Not%20Diyarayaa/Desktop/GITHUB/project-bct-service-rma/issues/issue-14-edit-data-management.md)** ✅ [SELESAI]
