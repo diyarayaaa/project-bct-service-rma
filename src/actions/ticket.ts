@@ -281,6 +281,17 @@ export async function updateTicketStatusAction(
     const updatedTicket = await db.serviceTicket.update({
       where: { id: ticketId },
       data: updateData,
+      include: {
+        customer: true,
+        technician: {
+          select: {
+            id: true,
+            username: true,
+            fullName: true,
+          },
+        },
+        vendor: true,
+      },
     });
 
     // Write Audit Log
