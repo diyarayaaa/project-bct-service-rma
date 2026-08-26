@@ -6,10 +6,11 @@
  */
 
 import { cookies } from "next/headers";
+import Link from "next/link";
 import { verifyJWT } from "@/lib/auth";
 import { logoutAction } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
-import { User, LogOut } from "lucide-react";
+import { User, LogOut, LayoutGrid, Building2, Users, Settings2 } from "lucide-react";
 
 export default async function DashboardLayout({
   children,
@@ -20,15 +21,33 @@ export default async function DashboardLayout({
   const token = cookieStore.get("auth_token")?.value;
   const user = token ? await verifyJWT(token) : null;
 
+  const navItems = [
+    { label: "Dashboard", href: "/", icon: LayoutGrid },
+    { label: "Vendors", href: "/vendors", icon: Building2 },
+    { label: "Customers", href: "/customers", icon: Users },
+    { label: "Preset Options", href: "/presets", icon: Settings2 },
+  ];
+
   return (
     <div className="flex min-h-screen bg-zinc-50 dark:bg-zinc-950">
-      {/* TODO: Sidebar navigation (Issue #04+) */}
       <aside className="hidden w-64 border-r border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900 md:block">
         <div className="flex h-16 items-center border-b border-zinc-200 px-6 dark:border-zinc-800">
           <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-50">Best Computel</h2>
         </div>
-        <nav className="p-4">
-          {/* Navigation items will be added in future issues */}
+        <nav className="p-4 space-y-1">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+              >
+                <Icon className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
+                {item.label}
+              </Link>
+            );
+          })}
         </nav>
       </aside>
 
