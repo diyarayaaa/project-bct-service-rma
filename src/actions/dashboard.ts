@@ -64,6 +64,14 @@ export interface DashboardData {
   technicians: string[];
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const serializeTicket = (t: any): DashboardTicketItem => ({
+  ...t,
+  estimatedCost: t.estimatedCost ? Number(t.estimatedCost) : null,
+  dpAmount: t.dpAmount ? Number(t.dpAmount) : null,
+  finalCost: t.finalCost ? Number(t.finalCost) : null,
+});
+
 export async function getDashboardDataAction(): Promise<ActionResponse<DashboardData>> {
   try {
     const now = new Date();
@@ -157,7 +165,7 @@ export async function getDashboardDataAction(): Promise<ActionResponse<Dashboard
     };
 
     // 2. Active Services Queue (PROSES SERVICE & PENDING SERVICE)
-    const activeServices = await db.serviceTicket.findMany({
+    const rawActiveServices = await db.serviceTicket.findMany({
       where: {
         status: {
           in: ["PROSES_SERVICE", "PENDING_SERVICE"],
@@ -170,7 +178,7 @@ export async function getDashboardDataAction(): Promise<ActionResponse<Dashboard
     });
 
     // 3. Completed Unclaimed Queue (SELESAI BELUM DIAMBIL)
-    const completedUnclaimed = await db.serviceTicket.findMany({
+    const rawCompletedUnclaimed = await db.serviceTicket.findMany({
       where: {
         status: "SELESAI_BELUM_DIAMBIL",
       },
@@ -179,6 +187,10 @@ export async function getDashboardDataAction(): Promise<ActionResponse<Dashboard
         updatedAt: "asc",
       },
     });
+
+    // Serialize Decimal objects to plain Javascript Numbers
+    const activeServices = rawActiveServices.map(serializeTicket);
+    const completedUnclaimed = rawCompletedUnclaimed.map(serializeTicket);
 
     // 4. Extract Technician List
     const defaultTechs = ["Wandi", "Satryo", "Derida", "Anzar"];
@@ -197,8 +209,8 @@ export async function getDashboardDataAction(): Promise<ActionResponse<Dashboard
           totalVendorActive,
           totalTodayIntake,
         },
-        activeServices: activeServices as unknown as DashboardTicketItem[],
-        completedUnclaimed: completedUnclaimed as unknown as DashboardTicketItem[],
+        activeServices,
+        completedUnclaimed,
         technicians: combinedTechs,
       },
     };
