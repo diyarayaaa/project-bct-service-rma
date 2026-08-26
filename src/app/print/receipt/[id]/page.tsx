@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import { notFound } from "next/navigation";
 import storeInfo from "../../../../../data/store-info.json";
+import PrintControlBar from "@/components/print/print-control-bar";
 
 export const dynamic = "force-dynamic";
 
@@ -40,42 +41,12 @@ export default async function ReceiptPrintPage({ params, searchParams }: PagePro
 
   return (
     <div className="bg-white text-zinc-950 min-h-screen">
-      {/* Control bar - hidden during print */}
-      <div className="no-print bg-zinc-900 text-white p-3 flex items-center justify-between shadow-md">
-        <span className="text-xs font-semibold">
-          Preview Cetak Nota: <span className="font-mono bg-zinc-800 px-1.5 py-0.5 rounded">{ticket.ticketNumber}</span>
-        </span>
-        <div className="flex items-center gap-3">
-          <a
-            href={`?format=thermal`}
-            className={`px-3 py-1 text-xs font-bold rounded-lg border transition-all ${
-              isThermal ? "bg-white text-zinc-900 border-white" : "border-zinc-700 hover:bg-zinc-800"
-            }`}
-          >
-            Struk Thermal
-          </a>
-          <a
-            href={`?format=a4`}
-            className={`px-3 py-1 text-xs font-bold rounded-lg border transition-all ${
-              !isThermal ? "bg-white text-zinc-900 border-white" : "border-zinc-700 hover:bg-zinc-800"
-            }`}
-          >
-            Faktur A4
-          </a>
-          <button
-            onClick={() => window.print()}
-            className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-1 rounded-lg text-xs transition-colors flex items-center gap-1"
-          >
-            Cetak Sekarang
-          </button>
-          <button
-            onClick={() => window.close()}
-            className="text-zinc-400 hover:text-white text-xs px-2"
-          >
-            Tutup
-          </button>
-        </div>
-      </div>
+      <PrintControlBar
+        title="Preview Cetak Nota:"
+        subtitle={ticket.ticketNumber}
+        showFormatToggle={true}
+        format={format}
+      />
 
       {/* CSS style overrides for print */}
       <style dangerouslySetInnerHTML={{ __html: `
