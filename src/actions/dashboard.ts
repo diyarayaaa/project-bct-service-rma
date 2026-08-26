@@ -33,7 +33,7 @@ export interface DashboardTicketItem {
   pickupDate: Date | null;
   estimatedCompletionDate: Date | null;
   estimatedCost: number | null;
-  downPayment: number | null;
+  dpAmount: number | null;
   finalCost: number | null;
   vendorResult: string | null;
   newSerialNumber: string | null;
@@ -126,7 +126,7 @@ export async function getDashboardDataAction(): Promise<ActionResponse<Dashboard
       pickupDate: true,
       estimatedCompletionDate: true,
       estimatedCost: true,
-      downPayment: true,
+      dpAmount: true,
       finalCost: true,
       vendorResult: true,
       newSerialNumber: true,

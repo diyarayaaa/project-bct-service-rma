@@ -130,7 +130,7 @@ export default function DashboardClient({
     status: t.status,
     notes: t.notes,
     estimatedCost: t.estimatedCost ? String(t.estimatedCost) : "0",
-    dpAmount: t.downPayment ? String(t.downPayment) : "0",
+    dpAmount: t.dpAmount ? String(t.dpAmount) : "0",
     remainingCost: "0",
     finalCost: t.finalCost ? String(t.finalCost) : null,
     pickupDate: t.pickupDate ? new Date(t.pickupDate).toISOString() : null,
