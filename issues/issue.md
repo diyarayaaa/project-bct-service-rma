@@ -47,7 +47,7 @@ Daftar issue perencanaan implementasi sistem **Best Computel Service & RMA** tel
 2. 🗄️ **[Issue #02: Database Schema Design & Prisma Migration](file:///c:/Users/I%27m%20Not%20Diyarayaa/Desktop/GITHUB/project-bct-service-rma/issues/issue-02-database-schema-and-migration.md)** ✅ [SELESAI]
 3. 🔐 **[Issue #03: Authentication, RBAC, & Database Seeder](file:///c:/Users/I%27m%20Not%20Diyarayaa/Desktop/GITHUB/project-bct-service-rma/issues/issue-03-authentication-rbac-seeder.md)** ✅ [SELESAI]
 4. 🏢 **[Issue #04: Master Data Management (Vendor, Customer, Preset)](file:///c:/Users/I%27m%20Not%20Diyarayaa/Desktop/GITHUB/project-bct-service-rma/issues/issue-04-master-data-management.md)** ✅ [SELESAI]
-5. 📝 **[Issue #05: Service & RMA Intake Form (Pendaftaran Unit Masuk)](file:///c:/Users/I%27m%20Not%20Diyarayaa/Desktop/GITHUB/project-bct-service-rma/issues/issue-05-service-rma-intake-form.md)**
+5. 📝 **[Issue #05: Service & RMA Intake Form (Pendaftaran Unit Masuk)](file:///c:/Users/I%27m%20Not%20Diyarayaa/Desktop/GITHUB/project-bct-service-rma/issues/issue-05-service-rma-intake-form.md)** ✅ [SELESAI]
 6. 🔄 **[Issue #06: Dynamic Status Lifecycle & Conditional Workflow](file:///c:/Users/I%27m%20Not%20Diyarayaa/Desktop/GITHUB/project-bct-service-rma/issues/issue-06-dynamic-status-lifecycle.md)**
 7. 📦 **[Issue #07: Surat Jalan & Vendor Shipment Batching](file:///c:/Users/I%27m%20Not%20Diyarayaa/Desktop/GITHUB/project-bct-service-rma/issues/issue-07-surat-jalan-vendor-batching.md)**
 8. 🖨️ **[Issue #08: Print Engine (Struk Thermal, Tanda Terima A4, Surat Jalan, Label Alamat)](file:///c:/Users/I%27m%20Not%20Diyarayaa/Desktop/GITHUB/project-bct-service-rma/issues/issue-08-print-engine.md)**
