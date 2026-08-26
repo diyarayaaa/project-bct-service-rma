@@ -454,12 +454,12 @@ export default function DashboardClient({
                           <span className="text-zinc-800 dark:text-zinc-200">{ticket.complaint}</span>
                         </div>
 
-                        {/* Pending Reason Banner (If Pending) */}
-                        {isPendingStatus && ticket.pendingReason && (
+                        {/* Pending Reason / Catatan Banner */}
+                        {ticket.notes && (
                           <div className="rounded-lg bg-amber-100/70 dark:bg-amber-950/60 p-2 border border-amber-200 dark:border-amber-900/50 text-[11px] text-amber-900 dark:text-amber-300 flex items-start gap-1.5">
                             <AlertTriangle className="h-3.5 w-3.5 text-amber-600 shrink-0 mt-0.5" />
                             <div>
-                              <strong>Alasan Pending:</strong> {ticket.pendingReason}
+                              <strong>Catatan / Alasan Pending:</strong> {ticket.notes}
                             </div>
                           </div>
                         )}

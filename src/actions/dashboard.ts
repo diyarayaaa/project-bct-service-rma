@@ -21,7 +21,6 @@ export interface DashboardTicketItem {
   complaint: string;
   accessories: string[];
   notes: string | null;
-  pendingReason: string | null;
   technician: {
     id: string;
     username: string;
@@ -120,7 +119,6 @@ export async function getDashboardDataAction(): Promise<ActionResponse<Dashboard
       complaint: true,
       accessories: true,
       notes: true,
-      pendingReason: true,
       createdAt: true,
       updatedAt: true,
       vendorSentDate: true,
