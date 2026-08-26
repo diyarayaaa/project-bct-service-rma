@@ -44,11 +44,11 @@ export async function getSalesReportDataAction(
     const start = new Date(`${dateStr}T00:00:00+07:00`);
     const end = new Date(`${dateStr}T23:59:59.999+07:00`);
 
-    // Internal stock criteria: isInternalStock = true, or name contains STOCK BCT or GHITP
+    // Internal stock criteria: customer name must contain STOCK BCT, STOK BCT, or GHITP
     const internalStockFilter = {
       OR: [
-        { customer: { isInternalStock: true } },
         { customer: { name: { contains: "STOCK BCT", mode: "insensitive" as const } } },
+        { customer: { name: { contains: "STOK BCT", mode: "insensitive" as const } } },
         { customer: { name: { contains: "GHITP", mode: "insensitive" as const } } },
       ],
     };

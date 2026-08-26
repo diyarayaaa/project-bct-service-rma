@@ -82,11 +82,11 @@ export async function getOperationalReportDataAction(
       },
     });
 
-    // Internal stock criteria: isInternalStock = true, or name contains STOCK BCT or GHITP
+    // Internal stock criteria: customer name must contain STOCK BCT, STOK BCT, or GHITP
     const internalStockFilter = {
       OR: [
-        { customer: { isInternalStock: true } },
         { customer: { name: { contains: "STOCK BCT", mode: "insensitive" as const } } },
+        { customer: { name: { contains: "STOK BCT", mode: "insensitive" as const } } },
         { customer: { name: { contains: "GHITP", mode: "insensitive" as const } } },
       ],
     };
