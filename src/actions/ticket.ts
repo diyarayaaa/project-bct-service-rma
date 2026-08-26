@@ -253,10 +253,13 @@ export async function updateTicketStatusAction(
       if (validatedData.vendorId) {
         updateData.vendor = { connect: { id: validatedData.vendorId } };
       }
-      updateData.vendorSentDate = validatedData.vendorSentDate;
-      updateData.vendorReceivedDate = validatedData.vendorReceivedDate;
-      updateData.vendorResult = validatedData.vendorResult;
-      updateData.newSerialNumber = validatedData.newSerialNumber;
+      const sentDate = validatedData.vendorSentDate
+        ? new Date(validatedData.vendorSentDate)
+        : (oldTicket.vendorSentDate || new Date());
+      updateData.vendorSentDate = sentDate;
+      updateData.vendorReceivedDate = validatedData.vendorReceivedDate ? new Date(validatedData.vendorReceivedDate) : null;
+      updateData.vendorResult = validatedData.vendorResult || null;
+      updateData.newSerialNumber = validatedData.newSerialNumber || null;
     } else {
       // Clear vendor details
       updateData.vendor = { disconnect: true };
@@ -311,6 +314,8 @@ export async function updateTicketStatusAction(
     });
 
     revalidatePath("/tickets");
+    revalidatePath("/reports/wa-operational");
+    revalidatePath("/reports/wa-sales");
     revalidatePath("/");
     return { success: true, data: JSON.parse(JSON.stringify(updatedTicket)) };
   } catch (error) {

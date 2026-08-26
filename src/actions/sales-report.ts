@@ -1,6 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
+import { ServiceStatus } from "@prisma/client";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface ActionResponse<T = any> {
@@ -67,20 +68,36 @@ export async function getSalesReportDataAction(
       },
     };
 
-    // Status filter for vendor active: ALIH_SERVICE for SERVICE or PROSES_GARANSI for GARANSI
-    const vendorActiveStatusFilter = {
-      OR: [
-        { serviceType: "SERVICE" as const, status: "ALIH_SERVICE" as const },
-        { serviceType: "GARANSI" as const, status: "PROSES_GARANSI" as const },
-      ],
-    };
+    const selectFields = {
+      id: true,
+      deviceName: true,
+      serialNumber: true,
+      newSerialNumber: true,
+      vendorResult: true,
+      complaint: true,
+      notes: true,
+      vendorSentDate: true,
+      customer: {
+        select: {
+          name: true,
+          isInternalStock: true,
+        },
+      },
+      vendor: {
+        select: {
+          name: true,
+          aliasCode: true,
+          location: true,
+        },
+      },
+    } as const;
 
     // 1. GARANSIAN SELESAI [TGL HARI INI] (STOK BCT/GHITP)
     const section1 = await db.serviceTicket.findMany({
       where: {
         ...salesCustomerFilter,
         status: {
-          in: ["SELESAI_BELUM_DIAMBIL", "SELESAI_DAN_DIAMBIL"],
+          in: ["SELESAI_BELUM_DIAMBIL" as ServiceStatus, "SELESAI_DAN_DIAMBIL" as ServiceStatus],
         },
         OR: [
           { pickupDate: { gte: start, lte: end } },
@@ -88,107 +105,57 @@ export async function getSalesReportDataAction(
           { updatedAt: { gte: start, lte: end } },
         ],
       },
-      select: {
-        id: true,
-        deviceName: true,
-        serialNumber: true,
-        newSerialNumber: true,
-        vendorResult: true,
-        complaint: true,
-        notes: true,
-        vendorSentDate: true,
-        customer: {
-          select: {
-            name: true,
-            isInternalStock: true,
-          },
-        },
-        vendor: {
-          select: {
-            name: true,
-            aliasCode: true,
-            location: true,
-          },
-        },
-      },
+      select: selectFields,
       orderBy: {
         vendor: {
           name: "asc",
         },
       },
     });
+
+    const section1Ids = section1.map((s) => s.id);
 
     // 2. GARANSIAN DI VENDOR BDG (STOK BCT/GHITP)
     const section2 = await db.serviceTicket.findMany({
       where: {
         ...salesCustomerFilter,
-        ...vendorActiveStatusFilter,
+        status: {
+          in: ["ALIH_SERVICE" as ServiceStatus, "PROSES_GARANSI" as ServiceStatus],
+        },
+        id: {
+          notIn: section1Ids,
+        },
         vendor: {
           location: "BDG",
         },
       },
-      select: {
-        id: true,
-        deviceName: true,
-        serialNumber: true,
-        newSerialNumber: true,
-        vendorResult: true,
-        complaint: true,
-        notes: true,
-        vendorSentDate: true,
-        customer: {
-          select: {
-            name: true,
-            isInternalStock: true,
-          },
-        },
-        vendor: {
-          select: {
-            name: true,
-            aliasCode: true,
-            location: true,
-          },
-        },
-      },
+      select: selectFields,
       orderBy: {
         vendor: {
           name: "asc",
         },
       },
     });
+
+    const section2Ids = section2.map((s) => s.id);
 
     // 3. GARANSIAN DI VENDOR JKT (STOK BCT/GHITP)
     const section3 = await db.serviceTicket.findMany({
       where: {
         ...salesCustomerFilter,
-        ...vendorActiveStatusFilter,
-        vendor: {
-          location: "JKT",
+        status: {
+          in: ["ALIH_SERVICE" as ServiceStatus, "PROSES_GARANSI" as ServiceStatus],
         },
-      },
-      select: {
-        id: true,
-        deviceName: true,
-        serialNumber: true,
-        newSerialNumber: true,
-        vendorResult: true,
-        complaint: true,
-        notes: true,
-        vendorSentDate: true,
-        customer: {
-          select: {
-            name: true,
-            isInternalStock: true,
-          },
+        id: {
+          notIn: [...section1Ids, ...section2Ids],
         },
         vendor: {
-          select: {
-            name: true,
-            aliasCode: true,
-            location: true,
+          location: {
+            in: ["JKT", "OTHER"],
           },
         },
       },
+      select: selectFields,
       orderBy: {
         vendor: {
           name: "asc",
@@ -196,37 +163,22 @@ export async function getSalesReportDataAction(
       },
     });
 
-    // 4. GARANSIAN BELUM DIPROSES (STOK BCT/GHITP)
+    const section3Ids = section3.map((s) => s.id);
+
+    // 4. GARANSIAN BELUM DIPROSES (STOK BCT/GHITP - Unit antrian awal atau belum dikirim ke vendor)
+    const existingIds = [...section1Ids, ...section2Ids, ...section3Ids];
+
     const section4 = await db.serviceTicket.findMany({
       where: {
         ...salesCustomerFilter,
         status: {
-          in: ["PROSES_SERVICE", "PENDING_SERVICE"],
+          in: ["PROSES_SERVICE" as ServiceStatus, "PENDING_SERVICE" as ServiceStatus, "PROSES_GARANSI" as ServiceStatus, "ALIH_SERVICE" as ServiceStatus],
+        },
+        id: {
+          notIn: existingIds,
         },
       },
-      select: {
-        id: true,
-        deviceName: true,
-        serialNumber: true,
-        newSerialNumber: true,
-        vendorResult: true,
-        complaint: true,
-        notes: true,
-        vendorSentDate: true,
-        customer: {
-          select: {
-            name: true,
-            isInternalStock: true,
-          },
-        },
-        vendor: {
-          select: {
-            name: true,
-            aliasCode: true,
-            location: true,
-          },
-        },
-      },
+      select: selectFields,
       orderBy: {
         createdAt: "desc",
       },

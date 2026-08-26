@@ -1,6 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
+import { ServiceStatus } from "@prisma/client";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface ActionResponse<T = any> {
@@ -42,15 +43,35 @@ export async function getOperationalReportDataAction(
     const start = new Date(`${dateStr}T00:00:00+07:00`);
     const end = new Date(`${dateStr}T23:59:59.999+07:00`);
 
-    // Status filter for active vendor: SERVICE with ALIH_SERVICE or GARANSI with PROSES_GARANSI
+    const selectFields = {
+      id: true,
+      deviceName: true,
+      serialNumber: true,
+      complaint: true,
+      notes: true,
+      vendorSentDate: true,
+      customer: {
+        select: {
+          name: true,
+          isInternalStock: true,
+        },
+      },
+      vendor: {
+        select: {
+          name: true,
+          aliasCode: true,
+          location: true,
+        },
+      },
+    } as const;
+
     const vendorActiveStatusFilter = {
-      OR: [
-        { serviceType: "SERVICE" as const, status: "ALIH_SERVICE" as const },
-        { serviceType: "GARANSI" as const, status: "PROSES_GARANSI" as const },
-      ],
+      status: {
+        in: ["ALIH_SERVICE" as ServiceStatus, "PROSES_GARANSI" as ServiceStatus],
+      },
     };
 
-    // 1. BARANG KE BANDUNG [TGL HARI INI] (Termasuk Customer & Internal Stock)
+    // 1. BARANG KE BANDUNG [TGL HARI INI] (Barang yang dikirim ke vendor Bandung pada hari laporan dibuat)
     const block1 = await db.serviceTicket.findMany({
       where: {
         ...vendorActiveStatusFilter,
@@ -62,27 +83,7 @@ export async function getOperationalReportDataAction(
           location: "BDG",
         },
       },
-      select: {
-        id: true,
-        deviceName: true,
-        serialNumber: true,
-        complaint: true,
-        notes: true,
-        vendorSentDate: true,
-        customer: {
-          select: {
-            name: true,
-            isInternalStock: true,
-          },
-        },
-        vendor: {
-          select: {
-            name: true,
-            aliasCode: true,
-            location: true,
-          },
-        },
-      },
+      select: selectFields,
       orderBy: {
         vendor: {
           name: "asc",
@@ -90,35 +91,20 @@ export async function getOperationalReportDataAction(
       },
     });
 
-    // 2. BARANG DI VENDOR BDG (Termasuk Customer & Internal Stock)
+    const block1Ids = block1.map((b) => b.id);
+
+    // 2. BARANG DI VENDOR BDG (Barang di vendor Bandung selain yang baru dikirim hari ini)
     const block2 = await db.serviceTicket.findMany({
       where: {
         ...vendorActiveStatusFilter,
+        id: {
+          notIn: block1Ids,
+        },
         vendor: {
           location: "BDG",
         },
       },
-      select: {
-        id: true,
-        deviceName: true,
-        serialNumber: true,
-        complaint: true,
-        notes: true,
-        vendorSentDate: true,
-        customer: {
-          select: {
-            name: true,
-            isInternalStock: true,
-          },
-        },
-        vendor: {
-          select: {
-            name: true,
-            aliasCode: true,
-            location: true,
-          },
-        },
-      },
+      select: selectFields,
       orderBy: {
         vendor: {
           name: "asc",
@@ -126,35 +112,22 @@ export async function getOperationalReportDataAction(
       },
     });
 
-    // 3. BARANG DI VENDOR JKT (Termasuk Customer & Internal Stock)
+    const block2Ids = block2.map((b) => b.id);
+
+    // 3. BARANG DI VENDOR JKT (Barang di vendor Jakarta/Lainnya)
     const block3 = await db.serviceTicket.findMany({
       where: {
         ...vendorActiveStatusFilter,
-        vendor: {
-          location: "JKT",
-        },
-      },
-      select: {
-        id: true,
-        deviceName: true,
-        serialNumber: true,
-        complaint: true,
-        notes: true,
-        vendorSentDate: true,
-        customer: {
-          select: {
-            name: true,
-            isInternalStock: true,
-          },
+        id: {
+          notIn: [...block1Ids, ...block2Ids],
         },
         vendor: {
-          select: {
-            name: true,
-            aliasCode: true,
-            location: true,
+          location: {
+            in: ["JKT", "OTHER"],
           },
         },
       },
+      select: selectFields,
       orderBy: {
         vendor: {
           name: "asc",
@@ -162,34 +135,21 @@ export async function getOperationalReportDataAction(
       },
     });
 
-    // 4. GARANSIAN BELUM DIPROSES (Semua unit dalam antrian awal/belum dikirim ke vendor)
+    const block3Ids = block3.map((b) => b.id);
+
+    // 4. GARANSIAN BELUM DIPROSES (Unit antrian awal atau belum dikirim ke vendor)
+    const existingIds = [...block1Ids, ...block2Ids, ...block3Ids];
+
     const block4 = await db.serviceTicket.findMany({
       where: {
         status: {
-          in: ["PROSES_SERVICE", "PENDING_SERVICE"],
+          in: ["PROSES_SERVICE" as ServiceStatus, "PENDING_SERVICE" as ServiceStatus, "PROSES_GARANSI" as ServiceStatus, "ALIH_SERVICE" as ServiceStatus],
+        },
+        id: {
+          notIn: existingIds,
         },
       },
-      select: {
-        id: true,
-        deviceName: true,
-        serialNumber: true,
-        complaint: true,
-        notes: true,
-        vendorSentDate: true,
-        customer: {
-          select: {
-            name: true,
-            isInternalStock: true,
-          },
-        },
-        vendor: {
-          select: {
-            name: true,
-            aliasCode: true,
-            location: true,
-          },
-        },
-      },
+      select: selectFields,
       orderBy: {
         createdAt: "desc",
       },
