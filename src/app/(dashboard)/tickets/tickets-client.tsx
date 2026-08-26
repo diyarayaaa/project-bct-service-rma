@@ -136,33 +136,35 @@ export default function TicketsClient({ initialTickets, vendors }: TicketsClient
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col gap-1 pb-2 border-b border-zinc-200/80 dark:border-zinc-800/80">
-        <h2 className="text-xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
-          <ClipboardList className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+      <div className="flex flex-col gap-1 pb-3 border-b border-slate-200/80 dark:border-slate-800/80">
+        <h2 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-slate-50 flex items-center gap-2.5">
+          <div className="p-2 bg-blue-50 dark:bg-blue-950/60 rounded-xl border border-blue-200/60 dark:border-blue-900/60 text-blue-600 dark:text-blue-400">
+            <ClipboardList className="h-5 w-5" />
+          </div>
           Daftar Tiket Servis & RMA
         </h2>
-        <p className="text-xs text-zinc-500 dark:text-zinc-400">
+        <p className="text-xs text-slate-500 dark:text-slate-400">
           Monitoring antrian servis internal, alih distributor vendor, dan status penyerahan unit.
         </p>
       </div>
 
       {/* Filter Bar & Quick Status Pills */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-xs">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/90 dark:border-slate-800/90 shadow-xs">
         {/* Search Bar */}
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
           <Input
             type="text"
             placeholder="Cari No Tiket, Nama Pelanggan, Model Perangkat, atau SN..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-9 text-xs h-9 bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 rounded-xl"
+            className="pl-10 pr-4 text-xs h-10 bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 rounded-full focus-visible:ring-2 focus-visible:ring-blue-500/20 focus-visible:border-blue-500 transition-all"
           />
         </div>
 
-        {/* Quick Status Filter Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
-          <span className="text-xs font-bold text-zinc-400 mr-1 flex items-center gap-1">
+        {/* Quick Status Filter Segmented Control */}
+        <div className="flex items-center gap-1.5 bg-slate-100/90 dark:bg-slate-800/80 p-1.5 rounded-2xl overflow-x-auto">
+          <span className="text-[11px] font-bold text-slate-400 px-2 flex items-center gap-1">
             <Filter className="h-3.5 w-3.5" /> Filter:
           </span>
           {[
@@ -175,10 +177,10 @@ export default function TicketsClient({ initialTickets, vendors }: TicketsClient
             <button
               key={pill.id}
               onClick={() => setStatusFilter(pill.id)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 whitespace-nowrap ${
                 statusFilter === pill.id
-                  ? "bg-indigo-600 text-white shadow-xs"
-                  : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700"
+                  ? "bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100"
               }`}
             >
               {pill.label}
@@ -188,10 +190,10 @@ export default function TicketsClient({ initialTickets, vendors }: TicketsClient
       </div>
 
       {/* Tickets Table */}
-      <div className="overflow-hidden rounded-2xl border border-zinc-200/80 bg-white shadow-xs dark:border-zinc-800/80 dark:bg-zinc-900">
+      <div className="overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-xs dark:border-slate-800/90 dark:bg-slate-900">
         <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-left text-xs text-zinc-600 dark:text-zinc-300">
-            <thead className="bg-zinc-50/80 text-zinc-500 dark:bg-zinc-900/80 dark:text-zinc-400 uppercase tracking-wider text-[10px] font-bold border-b border-zinc-200 dark:border-zinc-800">
+          <table className="w-full border-collapse text-left text-xs text-slate-600 dark:text-slate-300">
+            <thead className="bg-slate-50/80 text-slate-500 dark:bg-slate-900/80 dark:text-slate-400 uppercase tracking-wider text-[10px] font-bold border-b border-slate-200 dark:border-slate-800">
               <tr>
                 <th scope="col" className="px-6 py-3.5">No Tiket / Tanggal</th>
                 <th scope="col" className="px-6 py-3.5">Pelanggan</th>
@@ -201,21 +203,21 @@ export default function TicketsClient({ initialTickets, vendors }: TicketsClient
                 <th scope="col" className="px-6 py-3.5 text-right">Aksi</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-100 dark:divide-zinc-850">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-850">
               {filteredTickets.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-zinc-400 font-medium">
+                  <td colSpan={6} className="px-6 py-14 text-center text-slate-400 font-medium">
                     Tidak ada tiket servis yang cocok dengan kriteria pencarian.
                   </td>
                 </tr>
               ) : (
                 filteredTickets.map((ticket) => (
-                  <tr key={ticket.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-900/40 transition-colors">
+                  <tr key={ticket.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/40 transition-colors">
                     <td className="px-6 py-4">
-                      <div className="font-mono font-bold text-indigo-600 dark:text-indigo-400 text-xs">
+                      <div className="font-mono font-extrabold text-blue-600 dark:text-blue-400 text-xs">
                         {ticket.ticketNumber}
                       </div>
-                      <div className="text-zinc-400 text-[10px] mt-1 flex items-center gap-1 font-medium">
+                      <div className="text-slate-400 text-[10px] mt-1 flex items-center gap-1 font-medium">
                         <Calendar className="h-3 w-3" />
                         {new Date(ticket.entryDate).toLocaleDateString("id-ID", {
                           day: "numeric",
@@ -227,18 +229,18 @@ export default function TicketsClient({ initialTickets, vendors }: TicketsClient
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="font-bold text-zinc-900 dark:text-zinc-100">
+                      <div className="font-bold text-slate-900 dark:text-slate-100">
                         {ticket.customer.name}
                       </div>
-                      <div className="text-[11px] text-zinc-400 font-mono mt-0.5">{ticket.customer.phone}</div>
+                      <div className="text-[11px] text-slate-400 font-mono mt-0.5">{ticket.customer.phone}</div>
                     </td>
                     <td className="px-6 py-4 max-w-xs">
-                      <div className="font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
-                        <Tag className="h-3.5 w-3.5 text-indigo-500 shrink-0" />
+                      <div className="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+                        <Tag className="h-3.5 w-3.5 text-blue-600 shrink-0" />
                         {ticket.deviceName}
                       </div>
-                      <div className="text-[11px] font-mono text-zinc-400 mt-0.5">SN: {ticket.serialNumber}</div>
-                      <div className="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium mt-1 line-clamp-1 italic">
+                      <div className="text-[11px] font-mono text-slate-400 mt-0.5">SN: {ticket.serialNumber}</div>
+                      <div className="text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-1 line-clamp-1 italic">
                         &quot;{ticket.complaint}&quot;
                       </div>
                     </td>
@@ -251,8 +253,8 @@ export default function TicketsClient({ initialTickets, vendors }: TicketsClient
                       )}
                     </td>
                     <td className="px-6 py-4 text-xs font-semibold">
-                      <div className="flex items-center gap-1 text-zinc-800 dark:text-zinc-200">
-                        <User className="h-3.5 w-3.5 text-zinc-400" />
+                      <div className="flex items-center gap-1 text-slate-800 dark:text-slate-200">
+                        <User className="h-3.5 w-3.5 text-slate-400" />
                         {ticket.technician.fullName}
                       </div>
                     </td>
@@ -262,7 +264,7 @@ export default function TicketsClient({ initialTickets, vendors }: TicketsClient
                           variant="ghost"
                           size="icon"
                           onClick={() => setTicketToEdit(ticket)}
-                          className="h-8 w-8 text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-400 border border-zinc-200/80 dark:border-zinc-800 rounded-xl"
+                          className="h-8.5 w-8.5 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 border border-slate-200/80 dark:border-slate-800 rounded-xl"
                           title="Edit Data Tiket"
                         >
                           <Edit className="h-4 w-4" />
@@ -271,7 +273,7 @@ export default function TicketsClient({ initialTickets, vendors }: TicketsClient
                           variant="outline"
                           size="sm"
                           onClick={() => handleOpenStatusDialog(ticket)}
-                          className="border-zinc-200 dark:border-zinc-800 text-xs font-bold bg-white dark:bg-zinc-900 rounded-xl h-8 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-50"
+                          className="border-slate-200 dark:border-slate-800 text-xs font-bold bg-white dark:bg-slate-900 rounded-xl h-8.5 text-slate-800 dark:text-slate-200 hover:bg-slate-50"
                         >
                           Update Status
                         </Button>
@@ -279,21 +281,21 @@ export default function TicketsClient({ initialTickets, vendors }: TicketsClient
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 border border-zinc-200/80 dark:border-zinc-800 rounded-xl"
+                            className="h-8.5 w-8.5 text-slate-400 hover:text-slate-900 dark:hover:text-slate-50 border border-slate-200/80 dark:border-slate-800 rounded-xl"
                             title="Cetak Struk / Faktur"
                           >
                             <Printer className="h-4 w-4" />
                           </Button>
-                          <div className="absolute right-0 bottom-full mb-1 hidden group-hover:block bg-zinc-900 text-white rounded-xl shadow-lg py-1.5 text-[10px] w-28 z-50">
+                          <div className="absolute right-0 bottom-full mb-1 hidden group-hover:block bg-slate-900 text-white rounded-xl shadow-lg py-1.5 text-[10px] w-28 z-50">
                             <button
                               onClick={() => window.open(`/print/receipt/${ticket.ticketNumber}?format=thermal`, "_blank")}
-                              className="w-full text-left px-3 py-1.5 hover:bg-zinc-800 font-bold"
+                              className="w-full text-left px-3 py-1.5 hover:bg-slate-800 font-bold"
                             >
                               Struk Thermal
                             </button>
                             <button
                               onClick={() => window.open(`/print/receipt/${ticket.ticketNumber}?format=a4`, "_blank")}
-                              className="w-full text-left px-3 py-1.5 hover:bg-zinc-800 font-bold"
+                              className="w-full text-left px-3 py-1.5 hover:bg-slate-800 font-bold"
                             >
                               Faktur A4
                             </button>
@@ -303,7 +305,7 @@ export default function TicketsClient({ initialTickets, vendors }: TicketsClient
                           variant="ghost"
                           size="icon"
                           onClick={() => handleOpenWADialog(ticket)}
-                          className="h-8 w-8 text-zinc-400 hover:text-emerald-500 dark:hover:text-emerald-400 border border-zinc-200/80 dark:border-zinc-800 rounded-xl"
+                          className="h-8.5 w-8.5 text-slate-400 hover:text-emerald-500 dark:hover:text-emerald-400 border border-slate-200/80 dark:border-slate-800 rounded-xl"
                           title="Pratinjau Notifikasi WA"
                         >
                           <MessageCircle className="h-4 w-4" />
@@ -312,7 +314,7 @@ export default function TicketsClient({ initialTickets, vendors }: TicketsClient
                           variant="ghost"
                           size="icon"
                           onClick={() => setSelectedAuditTicket({ id: ticket.id, ticketNumber: ticket.ticketNumber })}
-                          className="h-8 w-8 text-zinc-400 hover:text-indigo-500 dark:hover:text-indigo-400 border border-zinc-200/80 dark:border-zinc-800 rounded-xl"
+                          className="h-8.5 w-8.5 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 border border-slate-200/80 dark:border-slate-800 rounded-xl"
                           title="Lihat Riwayat & Audit Log"
                         >
                           <History className="h-4 w-4" />
