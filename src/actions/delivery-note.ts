@@ -132,7 +132,19 @@ export async function createDeliveryNoteAction(
         });
       }
 
-      return note;
+      const populatedNote = await tx.deliveryNote.findUnique({
+        where: { id: note.id },
+        include: {
+          vendor: true,
+          tickets: {
+            include: {
+              customer: true,
+            },
+          },
+        },
+      });
+
+      return populatedNote;
     });
 
     revalidatePath("/shipments");
