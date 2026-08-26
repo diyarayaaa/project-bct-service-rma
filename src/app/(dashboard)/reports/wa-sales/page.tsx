@@ -1,17 +1,22 @@
-import { BarChart3 } from "lucide-react";
+import { getSalesReportDataAction } from "@/actions/sales-report";
+import SalesReportClient from "./sales-report-client";
 
-export default function SalesReportPlaceholderPage() {
+export const revalidate = 0;
+
+export default async function SalesReportPage() {
+  // Get today's local date string (GMT+7)
+  const now = new Date();
+  const tzoffset = 7 * 60 * 60000; // GMT+7 in ms
+  const localTime = new Date(now.getTime() + tzoffset);
+  const todayStr = localTime.toISOString().split("T")[0];
+
+  const res = await getSalesReportDataAction(todayStr);
+  const initialData = res.success && res.data ? res.data : { section1: [], section2: [], section3: [], section4: [] };
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-[400px] border border-dashed border-zinc-200 dark:border-zinc-800 rounded-xl bg-white dark:bg-zinc-900 p-8 text-center shadow-sm">
-      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-50 dark:bg-zinc-955 mb-4 border dark:border-zinc-800">
-        <BarChart3 className="h-6 w-6 text-zinc-400 dark:text-zinc-500 animate-pulse" />
-      </div>
-      <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-55">
-        Laporan WA Sales
-      </h3>
-      <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 max-w-sm">
-        Halaman laporan WhatsApp penjualan barang sedang dipersiapkan untuk diimplementasikan pada Issue #11.
-      </p>
-    </div>
+    <SalesReportClient
+      initialDate={todayStr}
+      initialData={initialData}
+    />
   );
 }
