@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { DashboardData, DashboardTicketItem, getDashboardDataAction } from "@/actions/dashboard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import {
   Wrench,
   PackageCheck,
@@ -74,7 +73,6 @@ export default function DashboardClient({
 
   // Filter Active Services
   const filteredActiveServices = data.activeServices.filter((ticket) => {
-    // 1. Tech filter
     if (selectedTech !== "ALL") {
       const techName = ticket.technician?.fullName || ticket.technician?.username || "";
       if (techName.toLowerCase() !== selectedTech.toLowerCase()) {
@@ -82,7 +80,6 @@ export default function DashboardClient({
       }
     }
 
-    // 2. Search query filter
     if (!searchQuery.trim()) return true;
     const query = searchQuery.toLowerCase();
 
@@ -168,14 +165,14 @@ export default function DashboardClient({
   return (
     <div className="space-y-6">
       {/* Header & Quick Action Shortcuts */}
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between pb-2 border-b border-zinc-200/80 dark:border-zinc-800/80">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
-            <Wrench className="h-6 w-6 text-indigo-500" />
-            Dashboard Monitoring Operasional
+          <h2 className="text-xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
+            <Wrench className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+            Executive Dashboard & Monitoring Operasional
           </h2>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-            Pusat kendali antrian servis teknisi, status klaim vendor, dan barang selesai.
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+            Ringkasan antrian servis teknisi, status klaim vendor, dan penyelesaian unit.
           </p>
         </div>
 
@@ -183,37 +180,37 @@ export default function DashboardClient({
         <div className="flex flex-wrap items-center gap-2">
           <Button
             onClick={() => router.push("/intake")}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs h-9 shadow-sm flex items-center gap-1.5"
+            className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs h-9 shadow-xs rounded-xl flex items-center gap-1.5 px-3.5"
           >
             <PlusCircle className="h-4 w-4" />
-            Input Tiket Baru
+            Input Tiket
           </Button>
 
           <Button
             onClick={() => router.push("/shipments")}
             variant="outline"
-            className="border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 font-semibold text-xs h-9 shadow-sm flex items-center gap-1.5"
+            className="border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 font-medium text-xs h-9 rounded-xl shadow-xs flex items-center gap-1.5 px-3.5 bg-white dark:bg-zinc-900"
           >
             <FileText className="h-4 w-4 text-amber-500" />
-            Buat Surat Jalan
+            Surat Jalan
           </Button>
 
           <Button
             onClick={() => router.push("/reports/wa-operational")}
             variant="outline"
-            className="border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 font-semibold text-xs h-9 shadow-sm flex items-center gap-1.5"
+            className="border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 font-medium text-xs h-9 rounded-xl shadow-xs flex items-center gap-1.5 px-3.5 bg-white dark:bg-zinc-900"
           >
             <MessageSquare className="h-4 w-4 text-emerald-500" />
-            Laporan WA RMA
+            Laporan RMA
           </Button>
 
           <Button
             onClick={() => router.push("/reports/wa-sales")}
             variant="outline"
-            className="border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 font-semibold text-xs h-9 shadow-sm flex items-center gap-1.5"
+            className="border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 font-medium text-xs h-9 rounded-xl shadow-xs flex items-center gap-1.5 px-3.5 bg-white dark:bg-zinc-900"
           >
             <BarChart3 className="h-4 w-4 text-blue-500" />
-            Laporan WA Sales
+            Laporan Sales
           </Button>
 
           <Button
@@ -221,7 +218,7 @@ export default function DashboardClient({
             disabled={isPending}
             variant="ghost"
             size="icon"
-            className="h-9 w-9 text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+            className="h-9 w-9 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 rounded-xl"
             title="Refresh Data"
           >
             <RefreshCw className={`h-4 w-4 ${isPending ? "animate-spin text-indigo-500" : ""}`} />
@@ -232,12 +229,12 @@ export default function DashboardClient({
       {/* 4 Summary Metric Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {/* Metric 1: Total Service Aktif */}
-        <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-850 dark:bg-zinc-900">
+        <div className="rounded-2xl border border-zinc-200/80 bg-white p-5 shadow-xs dark:border-zinc-800/80 dark:bg-zinc-900/90 relative overflow-hidden group">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
+            <span className="text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
               Antrian Service Aktif
             </span>
-            <div className="rounded-lg bg-indigo-50 dark:bg-indigo-950/50 p-2 text-indigo-600 dark:text-indigo-400">
+            <div className="rounded-xl bg-indigo-50 dark:bg-indigo-950/60 p-2.5 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/60">
               <Wrench className="h-4 w-4" />
             </div>
           </div>
@@ -245,19 +242,19 @@ export default function DashboardClient({
             <span className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50">
               {data.metrics.totalActiveService}
             </span>
-            <span className="text-xs font-medium text-zinc-400">
-              On Progress & Pending
+            <span className="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 px-2 py-0.5 rounded-full">
+              On Progress
             </span>
           </div>
         </div>
 
         {/* Metric 2: Selesai Belum Diambil */}
-        <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-850 dark:bg-zinc-900">
+        <div className="rounded-2xl border border-zinc-200/80 bg-white p-5 shadow-xs dark:border-zinc-800/80 dark:bg-zinc-900/90 relative overflow-hidden group">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
+            <span className="text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
               Selesai Belum Diambil
             </span>
-            <div className="rounded-lg bg-amber-50 dark:bg-amber-950/50 p-2 text-amber-600 dark:text-amber-400">
+            <div className="rounded-xl bg-amber-50 dark:bg-amber-950/60 p-2.5 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-900/60">
               <PackageCheck className="h-4 w-4" />
             </div>
           </div>
@@ -265,19 +262,19 @@ export default function DashboardClient({
             <span className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50">
               {data.metrics.totalCompletedUnclaimed}
             </span>
-            <span className="text-xs font-medium text-amber-600 dark:text-amber-400">
-              Menunggu Customer
+            <span className="text-[11px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded-full">
+              Menunggu User
             </span>
           </div>
         </div>
 
         {/* Metric 3: Garansi Aktif di Vendor */}
-        <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-850 dark:bg-zinc-900">
+        <div className="rounded-2xl border border-zinc-200/80 bg-white p-5 shadow-xs dark:border-zinc-800/80 dark:bg-zinc-900/90 relative overflow-hidden group">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
+            <span className="text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
               Garansi / Alih Vendor
             </span>
-            <div className="rounded-lg bg-emerald-50 dark:bg-emerald-950/50 p-2 text-emerald-600 dark:text-emerald-400">
+            <div className="rounded-xl bg-purple-50 dark:bg-purple-950/60 p-2.5 text-purple-600 dark:text-purple-400 border border-purple-100 dark:border-purple-900/60">
               <Truck className="h-4 w-4" />
             </div>
           </div>
@@ -285,19 +282,19 @@ export default function DashboardClient({
             <span className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50">
               {data.metrics.totalVendorActive}
             </span>
-            <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400">
-              Proses Vendor (BDG/JKT)
+            <span className="text-[11px] font-semibold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/40 px-2 py-0.5 rounded-full">
+              Vendor BDG/JKT
             </span>
           </div>
         </div>
 
         {/* Metric 4: Masuk Hari Ini */}
-        <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-850 dark:bg-zinc-900">
+        <div className="rounded-2xl border border-zinc-200/80 bg-white p-5 shadow-xs dark:border-zinc-800/80 dark:bg-zinc-900/90 relative overflow-hidden group">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
+            <span className="text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
               Unit Masuk Hari Ini
             </span>
-            <div className="rounded-lg bg-blue-50 dark:bg-blue-950/50 p-2 text-blue-600 dark:text-blue-400">
+            <div className="rounded-xl bg-emerald-50 dark:bg-emerald-950/60 p-2.5 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/60">
               <Calendar className="h-4 w-4" />
             </div>
           </div>
@@ -305,37 +302,37 @@ export default function DashboardClient({
             <span className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50">
               {data.metrics.totalTodayIntake}
             </span>
-            <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
-              Registrasi Baru
+            <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full">
+              Intake Baru
             </span>
           </div>
         </div>
       </div>
 
       {/* Global Search Bar & Technician Filter Tabs */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between bg-white dark:bg-zinc-900 p-4 rounded-xl border border-zinc-200 dark:border-zinc-850 shadow-sm">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-xs">
         {/* Search Bar */}
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
           <Input
-            placeholder="Cari No Tiket, Nama Customer, No HP, SN, atau Barang..."
+            placeholder="Cari No Tiket, Nama Customer, No HP, SN, atau Perangkat..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 text-xs h-9 bg-zinc-50 dark:bg-zinc-955 border-zinc-200 dark:border-zinc-800"
+            className="pl-9 text-xs h-9 bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 rounded-xl"
           />
         </div>
 
         {/* Technician Filter Tabs */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
-          <span className="text-xs font-medium text-zinc-400 mr-1 flex items-center gap-1">
+          <span className="text-xs font-bold text-zinc-400 mr-1 flex items-center gap-1">
             <User className="h-3.5 w-3.5" />
             Teknisi:
           </span>
           <button
             onClick={() => setSelectedTech("ALL")}
-            className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
               selectedTech === "ALL"
-                ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 shadow-sm"
+                ? "bg-indigo-600 text-white shadow-xs"
                 : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700"
             }`}
           >
@@ -345,9 +342,9 @@ export default function DashboardClient({
             <button
               key={tech}
               onClick={() => setSelectedTech(tech)}
-              className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
                 selectedTech.toLowerCase() === tech.toLowerCase()
-                  ? "bg-indigo-600 text-white shadow-sm"
+                  ? "bg-indigo-600 text-white shadow-xs"
                   : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700"
               }`}
             >
@@ -360,19 +357,14 @@ export default function DashboardClient({
       {/* Main Grid: Service On Progress & Barang Belum Diambil */}
       <div className="space-y-8">
         {/* SECTION 1: SERVICE ON PROGRESS QUEUE */}
-        <div className="rounded-xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-850 dark:bg-zinc-900 overflow-hidden">
-          <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 px-6 py-4 bg-zinc-50/50 dark:bg-zinc-900/50">
+        <div className="rounded-2xl border border-zinc-200/80 bg-white shadow-xs dark:border-zinc-800/80 dark:bg-zinc-900 overflow-hidden">
+          <div className="flex items-center justify-between border-b border-zinc-200/80 dark:border-zinc-800/80 px-6 py-4 bg-zinc-50/50 dark:bg-zinc-900/50">
             <div className="flex items-center gap-2">
               <span className="h-2.5 w-2.5 rounded-full bg-indigo-500 animate-pulse" />
-              <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-50">
+              <h3 className="text-sm font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50 uppercase">
                 Antrian Service On Progress ({filteredActiveServices.length})
               </h3>
             </div>
-            {selectedTech !== "ALL" && (
-              <Badge variant="outline" className="text-xs bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-900">
-                Teknisi: {selectedTech}
-              </Badge>
-            )}
           </div>
 
           <div className="p-6">
@@ -381,9 +373,6 @@ export default function DashboardClient({
                 <CheckCircle2 className="h-10 w-10 text-zinc-300 dark:text-zinc-700 mx-auto mb-2" />
                 <p className="text-sm font-semibold text-zinc-500 dark:text-zinc-400">
                   Tidak ada antrian servis aktif.
-                </p>
-                <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-1">
-                  Semua unit terproses atau tidak ada data yang cocok dengan kueri pencarian.
                 </p>
               </div>
             ) : (
@@ -396,20 +385,20 @@ export default function DashboardClient({
                   return (
                     <div
                       key={ticket.id}
-                      className={`relative flex flex-col justify-between rounded-xl border p-4 transition-all duration-200 hover:shadow-md ${
+                      className={`relative flex flex-col justify-between rounded-2xl border p-4.5 transition-all duration-200 hover:shadow-md ${
                         isPendingStatus
                           ? "border-amber-300 bg-amber-50/30 dark:border-amber-900/60 dark:bg-amber-950/20"
-                          : "border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-955"
+                          : "border-zinc-200/80 bg-white dark:border-zinc-800/80 dark:bg-zinc-950"
                       }`}
                     >
-                      <div className="space-y-3">
-                        {/* Header Row: Ticket Number & Status Badge */}
-                        <div className="flex items-start justify-between gap-2 border-b border-zinc-100 dark:border-zinc-850 pb-2.5">
+                      <div className="space-y-3 text-xs">
+                        {/* Header Row */}
+                        <div className="flex items-start justify-between gap-2 border-b border-zinc-100 dark:border-zinc-800 pb-2.5">
                           <div>
                             <span className="font-mono text-xs font-bold text-indigo-600 dark:text-indigo-400">
                               {ticket.ticketNumber}
                             </span>
-                            <div className="text-[11px] text-zinc-400 flex items-center gap-1 mt-0.5">
+                            <div className="text-[10px] text-zinc-400 flex items-center gap-1 mt-0.5 font-medium">
                               <Clock className="h-3 w-3" />
                               {daysInQueue === 0 ? "Hari ini" : `${daysInQueue} hari di antrian`}
                             </div>
@@ -417,17 +406,16 @@ export default function DashboardClient({
 
                           <div className="flex flex-col items-end gap-1">
                             {isPendingStatus ? (
-                              <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border-amber-300 text-[10px] flex items-center gap-1">
-                                <AlertTriangle className="h-3 w-3" />
-                                PENDING SERVICE
-                              </Badge>
+                              <span className="badge-pending">
+                                <AlertTriangle className="h-3 w-3" /> PENDING
+                              </span>
                             ) : (
-                              <Badge className="bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300 border-indigo-300 text-[10px]">
+                              <span className="badge-proses">
                                 PROSES SERVICE
-                              </Badge>
+                              </span>
                             )}
                             {techName && (
-                              <span className="text-[10px] font-semibold text-zinc-500 bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded">
+                              <span className="text-[10px] font-bold text-zinc-500 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded-md">
                                 👨‍🔧 {techName}
                               </span>
                             )}
@@ -435,28 +423,28 @@ export default function DashboardClient({
                         </div>
 
                         {/* Customer & Device Information */}
-                        <div className="space-y-1 text-xs">
+                        <div className="space-y-1">
                           <div className="font-bold text-zinc-900 dark:text-zinc-100 text-sm flex items-center gap-1.5">
-                            <Smartphone className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
+                            <Smartphone className="h-4 w-4 text-indigo-500 shrink-0" />
                             {ticket.deviceName}
                           </div>
-                          <div className="text-zinc-500 dark:text-zinc-400 text-[11px]">
-                            SN: <code className="font-semibold text-zinc-700 dark:text-zinc-300">{ticket.serialNumber}</code>
+                          <div className="text-zinc-500 dark:text-zinc-400 text-xs">
+                            SN: <code className="font-mono font-bold text-zinc-800 dark:text-zinc-200">{ticket.serialNumber}</code>
                           </div>
-                          <div className="text-zinc-600 dark:text-zinc-300 text-[11px]">
+                          <div className="text-zinc-600 dark:text-zinc-300 text-xs">
                             Customer: <strong>{ticket.customer.name}</strong> ({ticket.customer.phone})
                           </div>
                         </div>
 
                         {/* Complaint Box */}
-                        <div className="rounded-lg bg-zinc-50 dark:bg-zinc-900 p-2.5 border dark:border-zinc-800 text-[11px]">
-                          <span className="font-semibold text-zinc-500">Keluhan:</span>{" "}
-                          <span className="text-zinc-800 dark:text-zinc-200">{ticket.complaint}</span>
+                        <div className="rounded-xl bg-zinc-50 dark:bg-zinc-900 p-3 border border-zinc-100 dark:border-zinc-800 text-xs">
+                          <span className="font-bold text-zinc-400 uppercase text-[10px] block mb-0.5">Keluhan:</span>
+                          <span className="text-zinc-800 dark:text-zinc-200 leading-relaxed">{ticket.complaint}</span>
                         </div>
 
-                        {/* Pending Reason / Catatan Banner */}
+                        {/* Pending Reason Banner */}
                         {ticket.notes && (
-                          <div className="rounded-lg bg-amber-100/70 dark:bg-amber-950/60 p-2 border border-amber-200 dark:border-amber-900/50 text-[11px] text-amber-900 dark:text-amber-300 flex items-start gap-1.5">
+                          <div className="rounded-xl bg-amber-100/70 dark:bg-amber-950/60 p-2.5 border border-amber-200 dark:border-amber-900/50 text-xs text-amber-900 dark:text-amber-300 flex items-start gap-1.5">
                             <AlertTriangle className="h-3.5 w-3.5 text-amber-600 shrink-0 mt-0.5" />
                             <div>
                               <strong>Catatan / Alasan Pending:</strong> {ticket.notes}
@@ -465,13 +453,13 @@ export default function DashboardClient({
                         )}
                       </div>
 
-                      {/* Action Buttons Footer */}
+                      {/* Action Footer */}
                       <div className="mt-4 pt-3 border-t border-zinc-100 dark:border-zinc-850 flex items-center justify-end gap-2">
                         <Button
                           onClick={() => setSelectedTicketForWA(ticket)}
                           variant="outline"
                           size="sm"
-                          className="h-8 text-xs font-semibold border-emerald-200 dark:border-emerald-900/50 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 flex items-center gap-1"
+                          className="h-8 text-xs font-semibold border-emerald-200/80 dark:border-emerald-900/50 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 flex items-center gap-1 rounded-xl"
                         >
                           <MessageSquare className="h-3.5 w-3.5 text-emerald-500" />
                           WA
@@ -480,7 +468,7 @@ export default function DashboardClient({
                         <Button
                           onClick={() => setSelectedTicketForStatus(ticket)}
                           size="sm"
-                          className="h-8 text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white flex items-center gap-1"
+                          className="h-8 text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white flex items-center gap-1 rounded-xl"
                         >
                           Update Status
                         </Button>
@@ -494,17 +482,14 @@ export default function DashboardClient({
         </div>
 
         {/* SECTION 2: BARANG BELUM DIAMBIL QUEUE */}
-        <div className="rounded-xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-850 dark:bg-zinc-900 overflow-hidden">
-          <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 px-6 py-4 bg-zinc-50/50 dark:bg-zinc-900/50">
+        <div className="rounded-2xl border border-zinc-200/80 bg-white shadow-xs dark:border-zinc-800/80 dark:bg-zinc-900 overflow-hidden">
+          <div className="flex items-center justify-between border-b border-zinc-200/80 dark:border-zinc-800/80 px-6 py-4 bg-zinc-50/50 dark:bg-zinc-900/50">
             <div className="flex items-center gap-2">
               <span className="h-2.5 w-2.5 rounded-full bg-amber-500" />
-              <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-50">
+              <h3 className="text-sm font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50 uppercase">
                 Barang Selesai Belum Diambil ({filteredCompletedUnclaimed.length})
               </h3>
             </div>
-            <span className="text-xs text-zinc-400 font-medium">
-              Perangkat selesai perbaikan menunggu penyerahan ke customer
-            </span>
           </div>
 
           <div className="overflow-x-auto">
@@ -517,14 +502,14 @@ export default function DashboardClient({
               </div>
             ) : (
               <table className="w-full text-left text-xs text-zinc-600 dark:text-zinc-300">
-                <thead className="bg-zinc-50 text-zinc-500 dark:bg-zinc-900/80 dark:text-zinc-400 uppercase tracking-wider text-[10px] border-b dark:border-zinc-800">
+                <thead className="bg-zinc-50/80 text-zinc-500 dark:bg-zinc-900/80 dark:text-zinc-400 uppercase tracking-wider text-[10px] font-bold border-b border-zinc-200 dark:border-zinc-800">
                   <tr>
-                    <th className="px-6 py-3">No Tiket</th>
-                    <th className="px-6 py-3">Customer</th>
-                    <th className="px-6 py-3">Perangkat / SN</th>
-                    <th className="px-6 py-3">Hasil Service</th>
-                    <th className="px-6 py-3">Lama Tertahan</th>
-                    <th className="px-6 py-3 text-right">Aksi</th>
+                    <th className="px-6 py-3.5">No Tiket</th>
+                    <th className="px-6 py-3.5">Customer</th>
+                    <th className="px-6 py-3.5">Perangkat / SN</th>
+                    <th className="px-6 py-3.5">Hasil Service</th>
+                    <th className="px-6 py-3.5">Lama Tertahan</th>
+                    <th className="px-6 py-3.5 text-right">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-100 dark:divide-zinc-850">
@@ -534,45 +519,44 @@ export default function DashboardClient({
 
                     return (
                       <tr key={ticket.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-900/50 transition-colors">
-                        <td className="px-6 py-4 font-mono font-bold text-indigo-600 dark:text-indigo-400">
+                        <td className="px-6 py-3.5 font-mono font-bold text-indigo-600 dark:text-indigo-400">
                           {ticket.ticketNumber}
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-6 py-3.5">
                           <div className="font-semibold text-zinc-900 dark:text-zinc-100">
                             {ticket.customer.name}
                           </div>
                           <div className="text-[11px] text-zinc-400">{ticket.customer.phone}</div>
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-6 py-3.5">
                           <div className="font-semibold text-zinc-800 dark:text-zinc-200">
                             {ticket.deviceName}
                           </div>
                           <div className="text-[11px] font-mono text-zinc-400">SN: {ticket.serialNumber}</div>
                         </td>
-                        <td className="px-6 py-4">
-                          <span className="font-medium text-emerald-600 dark:text-emerald-400">
+                        <td className="px-6 py-3.5">
+                          <span className="font-semibold text-emerald-600 dark:text-emerald-400">
                             {ticket.vendorResult || "Selesai Perbaikan"}
                           </span>
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-6 py-3.5">
                           {isLongOverdue ? (
-                            <Badge className="bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300 border-rose-300 text-[10px] flex items-center gap-1 w-fit">
-                              <AlertTriangle className="h-3 w-3" />
-                              {daysUnclaimed} Hari (Perlu Follow-up)
-                            </Badge>
+                            <span className="badge-gagal flex items-center gap-1 w-fit">
+                              <AlertTriangle className="h-3 w-3" /> {daysUnclaimed} Hari (Follow-up)
+                            </span>
                           ) : (
-                            <Badge className="bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 border-amber-200 text-[10px]">
+                            <span className="badge-pending">
                               {daysUnclaimed === 0 ? "Hari ini" : `${daysUnclaimed} hari`}
-                            </Badge>
+                            </span>
                           )}
                         </td>
-                        <td className="px-6 py-4 text-right">
+                        <td className="px-6 py-3.5 text-right">
                           <div className="flex items-center justify-end gap-2">
                             <Button
                               onClick={() => setSelectedTicketForWA(ticket)}
                               variant="outline"
                               size="sm"
-                              className="h-8 text-xs font-semibold border-emerald-200 text-emerald-700 dark:border-emerald-900 dark:text-emerald-400"
+                              className="h-8 text-xs font-semibold border-emerald-200/80 text-emerald-700 dark:border-emerald-900/50 dark:text-emerald-400 rounded-xl"
                             >
                               WA
                             </Button>
@@ -580,7 +564,7 @@ export default function DashboardClient({
                             <Button
                               onClick={() => setSelectedTicketForStatus(ticket)}
                               size="sm"
-                              className="h-8 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-1"
+                              className="h-8 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-1 rounded-xl"
                             >
                               <CheckCircle2 className="h-3.5 w-3.5" />
                               Serahkan
