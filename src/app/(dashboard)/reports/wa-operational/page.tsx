@@ -11,7 +11,7 @@ export default async function OperationalReportPage() {
   const todayStr = localTime.toISOString().split("T")[0];
 
   const res = await getOperationalReportDataAction(todayStr);
-  const initialData = res.success && res.data ? res.data : { block1: [], block2: [], block3: [] };
+  const initialData = res.success && res.data ? res.data : { block1: [], block2: [], block3: [], block4: [] };
 
   return (
     <OperationalReportClient
