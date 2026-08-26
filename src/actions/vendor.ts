@@ -3,6 +3,7 @@
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface ActionResponse<T = any> {
   success: boolean;
   error?: string;

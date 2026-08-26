@@ -10,7 +10,7 @@ import { toast } from "sonner";
 interface QuickAddVendorDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  onSuccess?: (vendor: any) => void;
+  onSuccess?: (vendor: { id: string; name: string; aliasCode: string | null }) => void;
 }
 
 export default function QuickAddVendorDialog({

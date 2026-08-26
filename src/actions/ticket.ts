@@ -4,9 +4,10 @@ import { db } from "@/lib/db";
 import { ticketSchema, updateStatusSchema } from "@/lib/validations";
 import { cookies } from "next/headers";
 import { verifyJWT } from "@/lib/auth";
-import { Prisma } from "@prisma/client";
+import { Prisma, DeviceType, ServiceStatus, VendorResult } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface ActionResponse<T = any> {
   success: boolean;
   error?: string;
@@ -78,7 +79,7 @@ export async function createTicketAction(
     serviceType: String(formData.get("serviceType")) as "SERVICE" | "GARANSI",
     customerName: String(formData.get("customerName")).trim(),
     customerPhone: String(formData.get("customerPhone")).trim(),
-    deviceType: String(formData.get("deviceType")) as any,
+    deviceType: String(formData.get("deviceType")) as DeviceType,
     deviceName: String(formData.get("deviceName")).trim(),
     serialNumber: String(formData.get("serialNumber")).trim(),
     complaint: String(formData.get("complaint")).trim(),
@@ -194,13 +195,13 @@ export async function updateTicketStatusAction(
   prevState: ActionResponse | null,
   formData: FormData
 ): Promise<ActionResponse> {
-  const status = String(formData.get("status")) as any;
+  const status = String(formData.get("status")) as ServiceStatus;
   const notes = String(formData.get("notes") || "").trim() || null;
 
   const vendorId = formData.get("vendorId") ? String(formData.get("vendorId")) : null;
   const vendorSentDate = formData.get("vendorSentDate") ? new Date(String(formData.get("vendorSentDate"))) : null;
   const vendorReceivedDate = formData.get("vendorReceivedDate") ? new Date(String(formData.get("vendorReceivedDate"))) : null;
-  const vendorResult = formData.get("vendorResult") ? (String(formData.get("vendorResult")) as any) : null;
+  const vendorResult = formData.get("vendorResult") ? (String(formData.get("vendorResult")) as VendorResult) : null;
   const newSerialNumber = formData.get("newSerialNumber") ? String(formData.get("newSerialNumber")).trim() : null;
 
   const finalCostInput = formData.get("finalCost");
@@ -242,21 +243,23 @@ export async function updateTicketStatusAction(
     }
 
     // Build update payload
-    const updateData: any = {
+    const updateData: Prisma.ServiceTicketUpdateInput = {
       status: validatedData.status,
       notes: validatedData.notes,
     };
 
     // If ALIH_SERVICE or PROSES_GARANSI, save vendor details
     if (validatedData.status === "ALIH_SERVICE" || validatedData.status === "PROSES_GARANSI") {
-      updateData.vendorId = validatedData.vendorId;
+      if (validatedData.vendorId) {
+        updateData.vendor = { connect: { id: validatedData.vendorId } };
+      }
       updateData.vendorSentDate = validatedData.vendorSentDate;
       updateData.vendorReceivedDate = validatedData.vendorReceivedDate;
       updateData.vendorResult = validatedData.vendorResult;
       updateData.newSerialNumber = validatedData.newSerialNumber;
     } else {
       // Clear vendor details
-      updateData.vendorId = null;
+      updateData.vendor = { disconnect: true };
       updateData.vendorSentDate = null;
       updateData.vendorReceivedDate = null;
       updateData.vendorResult = null;

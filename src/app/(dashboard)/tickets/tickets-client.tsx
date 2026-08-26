@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, ClipboardList, User, Calendar, Edit, Tag, Printer, FileText } from "lucide-react";
+import { Search, ClipboardList, User, Calendar, Edit, Tag, Printer } from "lucide-react";
 import StatusDialog from "@/components/tickets/status-dialog";
 
 interface Customer {
@@ -250,6 +250,7 @@ export default function TicketsClient({ initialTickets, vendors }: TicketsClient
 
       {selectedTicket && (
         <StatusDialog
+          key={selectedTicket.id}
           isOpen={isDialogOpen}
           onOpenChange={setIsDialogOpen}
           ticket={selectedTicket}

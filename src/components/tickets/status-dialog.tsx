@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useTransition, useEffect } from "react";
+import { useState, useTransition } from "react";
 import { updateTicketStatusAction } from "@/actions/ticket";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { AlertCircle, Calendar, DollarSign, Settings, ShieldAlert, Truck } from "lucide-react";
+import { AlertCircle, DollarSign, Settings, Truck } from "lucide-react";
 
 interface Customer {
   id: string;
@@ -59,8 +59,13 @@ interface StatusDialogProps {
   onOpenChange: (open: boolean) => void;
   ticket: Ticket;
   vendors: Vendor[];
-  onSuccess: (updatedTicket: any) => void;
+  onSuccess: (updatedTicket: Ticket) => void;
 }
+
+const formatDateForInput = (dateStr: string | null | undefined) => {
+  if (!dateStr) return "";
+  return dateStr.slice(0, 10);
+};
 
 export default function StatusDialog({
   isOpen,
@@ -75,30 +80,12 @@ export default function StatusDialog({
   const [status, setStatus] = useState(ticket.status);
   const [notes, setNotes] = useState(ticket.notes || "");
   const [vendorId, setVendorId] = useState(ticket.vendorId || "");
-  const [vendorSentDate, setVendorSentDate] = useState("");
-  const [vendorReceivedDate, setVendorReceivedDate] = useState("");
+  const [vendorSentDate, setVendorSentDate] = useState(formatDateForInput(ticket.vendorSentDate));
+  const [vendorReceivedDate, setVendorReceivedDate] = useState(formatDateForInput(ticket.vendorReceivedDate));
   const [vendorResult, setVendorResult] = useState(ticket.vendorResult || "");
   const [newSerialNumber, setNewSerialNumber] = useState(ticket.newSerialNumber || "");
   const [finalCost, setFinalCost] = useState<string>(ticket.finalCost || ticket.estimatedCost || "0");
-  const [pickupDate, setPickupDate] = useState("");
-
-  const formatDateForInput = (dateStr: string | null | undefined) => {
-    if (!dateStr) return "";
-    return dateStr.slice(0, 10);
-  };
-
-  // Sync state with ticket when dialog opens / ticket changes
-  useEffect(() => {
-    setStatus(ticket.status);
-    setNotes(ticket.notes || "");
-    setVendorId(ticket.vendorId || "");
-    setVendorSentDate(formatDateForInput(ticket.vendorSentDate));
-    setVendorReceivedDate(formatDateForInput(ticket.vendorReceivedDate));
-    setVendorResult(ticket.vendorResult || "");
-    setNewSerialNumber(ticket.newSerialNumber || "");
-    setFinalCost(ticket.finalCost || ticket.estimatedCost || "0");
-    setPickupDate(formatDateForInput(ticket.pickupDate) || formatDateForInput(new Date().toISOString()));
-  }, [ticket, isOpen]);
+  const [pickupDate, setPickupDate] = useState(formatDateForInput(ticket.pickupDate) || formatDateForInput(new Date().toISOString()));
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

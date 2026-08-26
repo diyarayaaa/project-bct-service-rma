@@ -14,7 +14,6 @@ import {
   Calendar,
   CheckSquare,
   Square,
-  Search,
   Eye,
   Printer,
   ChevronRight,

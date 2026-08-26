@@ -16,7 +16,7 @@ export async function proxy(request: NextRequest) {
     try {
       const { payload } = await jwtVerify(token, JWT_SECRET);
       user = payload;
-    } catch (e) {
+    } catch {
       // Token tidak valid atau kedaluwarsa
     }
   }

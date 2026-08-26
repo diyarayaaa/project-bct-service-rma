@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { verifyJWT } from "@/lib/auth";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface ActionResponse<T = any> {
   success: boolean;
   error?: string;

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useTransition } from "react";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { createTicketAction } from "@/actions/ticket";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,17 +9,12 @@ import { toast } from "sonner";
 import {
   FileText,
   User,
-  Phone,
   Laptop,
   CheckCircle,
   Plus,
-  Info,
   DollarSign,
-  AlertTriangle,
   Printer,
   Share2,
-  Calendar,
-  X,
 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 
@@ -56,6 +52,7 @@ export default function IntakeClient({
   customers,
   presets,
 }: IntakeClientProps) {
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [ticketNumber, setTicketNumber] = useState(initialTicketNumber);
   
@@ -161,11 +158,7 @@ export default function IntakeClient({
       p.label.toLowerCase() !== complaint.toLowerCase()
   );
 
-  // Change default accessories when deviceType changes
-  useEffect(() => {
-    setSelectedAccessories([]);
-    setExtraAccessories([]);
-  }, [deviceType]);
+  // Selected accessories are updated directly in the onChange of deviceType select input.
 
   const handleSelectCustomer = (c: Customer) => {
     setCustomerName(c.name);
@@ -421,7 +414,12 @@ export default function IntakeClient({
               <select
                 id="deviceType"
                 value={deviceType}
-                onChange={(e) => setDeviceType(e.target.value as any)}
+                onChange={(e) => {
+                  const newType = e.target.value as "LAPTOP" | "PC" | "PRINTER" | "PROJECTOR" | "AKSESORIS" | "SPAREPART" | "OTHER";
+                  setDeviceType(newType);
+                  setSelectedAccessories([]);
+                  setExtraAccessories([]);
+                }}
                 className="flex h-9 w-full rounded-md border border-zinc-200 bg-zinc-50 px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-50"
               >
                 <option value="LAPTOP">LAPTOP</option>
@@ -744,7 +742,7 @@ export default function IntakeClient({
             <Button
               type="button"
               onClick={() => {
-                window.location.href = "/";
+                router.push("/");
               }}
               className="w-full bg-zinc-100 hover:bg-zinc-200 text-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800 dark:text-zinc-200"
             >

@@ -2,7 +2,9 @@
 
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
+import { DeviceType } from "@prisma/client";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface ActionResponse<T = any> {
   success: boolean;
   error?: string;
@@ -16,7 +18,7 @@ export async function createPresetAction(
   const category = String(formData.get("category")).trim();
   const label = String(formData.get("label")).trim();
   const deviceTypeInput = formData.get("deviceType");
-  const deviceType = deviceTypeInput ? (String(deviceTypeInput) as any) : null;
+  const deviceType = deviceTypeInput ? (String(deviceTypeInput) as DeviceType) : null;
 
   if (!category || !label) {
     return { success: false, error: "Kategori dan label preset wajib diisi." };
