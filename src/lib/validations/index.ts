@@ -33,3 +33,57 @@ export const ticketSchema = z.object({
 });
 
 export type TicketSchemaInput = z.infer<typeof ticketSchema>;
+
+// Update Status Schema with Conditional refinements
+export const updateStatusSchema = z.object({
+  status: z.enum([
+    "PROSES_SERVICE",
+    "PENDING_SERVICE",
+    "ALIH_SERVICE",
+    "PROSES_GARANSI",
+    "SELESAI_BELUM_DIAMBIL",
+    "SELESAI_DAN_DIAMBIL",
+    "GAGAL_SERVICE_GARANSI",
+  ]),
+  notes: z.string().optional().nullable(),
+  
+  // Conditionally required when ALIH_SERVICE or PROSES_GARANSI
+  vendorId: z.string().optional().nullable(),
+  vendorSentDate: z.coerce.date().nullable().optional(),
+  vendorReceivedDate: z.coerce.date().nullable().optional(),
+  vendorResult: z.enum(["DISERVICE", "DIGANTI_BARU"]).nullable().optional(),
+  newSerialNumber: z.string().optional().nullable(),
+
+  // Conditionally required when SELESAI_DAN_DIAMBIL or GAGAL_SERVICE_GARANSI
+  finalCost: z.coerce.number().min(0, "Biaya akhir tidak boleh kurang dari 0").optional().nullable(),
+  pickupDate: z.coerce.date().nullable().optional(),
+}).refine((data) => {
+  // If ALIH_SERVICE or PROSES_GARANSI, vendorId is required
+  if (data.status === "ALIH_SERVICE" || data.status === "PROSES_GARANSI") {
+    return !!data.vendorId;
+  }
+  return true;
+}, {
+  message: "Vendor wajib dipilih untuk status Alih Service / Proses Garansi",
+  path: ["vendorId"],
+}).refine((data) => {
+  // If PROSES_GARANSI and vendorResult is DIGANTI_BARU, newSerialNumber is required
+  if (data.status === "PROSES_GARANSI" && data.vendorResult === "DIGANTI_BARU") {
+    return !!data.newSerialNumber && data.newSerialNumber.trim() !== "";
+  }
+  return true;
+}, {
+  message: "Serial Number (SN) baru wajib diisi jika hasil garansi diganti baru",
+  path: ["newSerialNumber"],
+}).refine((data) => {
+  // If SELESAI_DAN_DIAMBIL or GAGAL_SERVICE_GARANSI, pickupDate is required
+  if (data.status === "SELESAI_DAN_DIAMBIL" || data.status === "GAGAL_SERVICE_GARANSI") {
+    return !!data.pickupDate;
+  }
+  return true;
+}, {
+  message: "Tanggal diambil customer wajib diisi",
+  path: ["pickupDate"],
+});
+
+export type UpdateStatusSchemaInput = z.infer<typeof updateStatusSchema>;

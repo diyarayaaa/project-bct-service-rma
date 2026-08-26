@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { ticketSchema } from "@/lib/validations";
+import { ticketSchema, updateStatusSchema } from "@/lib/validations";
 import { cookies } from "next/headers";
 import { verifyJWT } from "@/lib/auth";
 import { Prisma } from "@prisma/client";
@@ -186,5 +186,121 @@ export async function createTicketAction(
   } catch (error) {
     console.error("Create Ticket Error:", error);
     return { success: false, error: "Gagal menyimpan tiket baru ke database." };
+  }
+}
+
+export async function updateTicketStatusAction(
+  ticketId: string,
+  prevState: ActionResponse | null,
+  formData: FormData
+): Promise<ActionResponse> {
+  const status = String(formData.get("status")) as any;
+  const notes = String(formData.get("notes") || "").trim() || null;
+
+  const vendorId = formData.get("vendorId") ? String(formData.get("vendorId")) : null;
+  const vendorSentDate = formData.get("vendorSentDate") ? new Date(String(formData.get("vendorSentDate"))) : null;
+  const vendorReceivedDate = formData.get("vendorReceivedDate") ? new Date(String(formData.get("vendorReceivedDate"))) : null;
+  const vendorResult = formData.get("vendorResult") ? (String(formData.get("vendorResult")) as any) : null;
+  const newSerialNumber = formData.get("newSerialNumber") ? String(formData.get("newSerialNumber")).trim() : null;
+
+  const finalCostInput = formData.get("finalCost");
+  const finalCost = finalCostInput ? Number(finalCostInput) : null;
+  const pickupDate = formData.get("pickupDate") ? new Date(String(formData.get("pickupDate"))) : null;
+
+  // Validate inputs
+  const validation = updateStatusSchema.safeParse({
+    status,
+    notes,
+    vendorId,
+    vendorSentDate,
+    vendorReceivedDate,
+    vendorResult,
+    newSerialNumber,
+    finalCost,
+    pickupDate,
+  });
+
+  if (!validation.success) {
+    const errorMsg = validation.error.issues.map((e) => e.message).join(", ");
+    return { success: false, error: errorMsg };
+  }
+
+  const validatedData = validation.data;
+
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("auth_token")?.value;
+    const currentUser = token ? await verifyJWT(token) : null;
+
+    // Get old ticket for comparison
+    const oldTicket = await db.serviceTicket.findUnique({
+      where: { id: ticketId },
+    });
+
+    if (!oldTicket) {
+      return { success: false, error: "Tiket tidak ditemukan." };
+    }
+
+    // Build update payload
+    const updateData: any = {
+      status: validatedData.status,
+      notes: validatedData.notes,
+    };
+
+    // If ALIH_SERVICE or PROSES_GARANSI, save vendor details
+    if (validatedData.status === "ALIH_SERVICE" || validatedData.status === "PROSES_GARANSI") {
+      updateData.vendorId = validatedData.vendorId;
+      updateData.vendorSentDate = validatedData.vendorSentDate;
+      updateData.vendorReceivedDate = validatedData.vendorReceivedDate;
+      updateData.vendorResult = validatedData.vendorResult;
+      updateData.newSerialNumber = validatedData.newSerialNumber;
+    } else {
+      // Clear vendor details
+      updateData.vendorId = null;
+      updateData.vendorSentDate = null;
+      updateData.vendorReceivedDate = null;
+      updateData.vendorResult = null;
+      updateData.newSerialNumber = null;
+    }
+
+    // If SELESAI_DAN_DIAMBIL or GAGAL_SERVICE_GARANSI, save pickup and cost details
+    if (validatedData.status === "SELESAI_DAN_DIAMBIL" || validatedData.status === "GAGAL_SERVICE_GARANSI") {
+      const finalCostVal = validatedData.finalCost !== null && validatedData.finalCost !== undefined
+        ? validatedData.finalCost
+        : 0;
+      updateData.finalCost = new Prisma.Decimal(finalCostVal);
+      updateData.pickupDate = validatedData.pickupDate;
+      
+      const remaining = finalCostVal - Number(oldTicket.dpAmount);
+      updateData.remainingCost = new Prisma.Decimal(Math.max(0, remaining));
+    } else {
+      updateData.pickupDate = null;
+      updateData.finalCost = null;
+    }
+
+    const updatedTicket = await db.serviceTicket.update({
+      where: { id: ticketId },
+      data: updateData,
+    });
+
+    // Write Audit Log
+    const changeDesc = `Status berubah dari ${oldTicket.status} ke ${updatedTicket.status} oleh ${currentUser?.username || "System"}`;
+    await db.auditLog.create({
+      data: {
+        ticketId,
+        userId: currentUser?.id || null,
+        action: "STATUS_CHANGE",
+        description: changeDesc,
+        previousData: JSON.parse(JSON.stringify(oldTicket)),
+        newData: JSON.parse(JSON.stringify(updatedTicket)),
+      },
+    });
+
+    revalidatePath("/tickets");
+    revalidatePath("/");
+    return { success: true, data: JSON.parse(JSON.stringify(updatedTicket)) };
+  } catch (error) {
+    console.error("Update Status Error:", error);
+    return { success: false, error: "Gagal menyimpan perubahan status tiket." };
   }
 }
