@@ -3,9 +3,10 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, ClipboardList, User, Calendar, Edit, Tag, Printer, MessageCircle } from "lucide-react";
+import { Search, ClipboardList, User, Calendar, Edit, Tag, Printer, MessageCircle, History } from "lucide-react";
 import StatusDialog from "@/components/tickets/status-dialog";
 import WhatsAppDialog from "@/components/tickets/whatsapp-dialog";
+import AuditLogDialog from "@/components/tickets/audit-log-dialog";
 
 interface Customer {
   id: string;
@@ -65,6 +66,7 @@ export default function TicketsClient({ initialTickets, vendors }: TicketsClient
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isWADialogOpen, setIsWADialogOpen] = useState(false);
   const [selectedWATicket, setSelectedWATicket] = useState<Ticket | null>(null);
+  const [selectedAuditTicket, setSelectedAuditTicket] = useState<{ id: string; ticketNumber: string } | null>(null);
 
   const handleOpenWADialog = (ticket: Ticket) => {
     setSelectedWATicket(ticket);
@@ -251,8 +253,18 @@ export default function TicketsClient({ initialTickets, vendors }: TicketsClient
                           size="icon"
                           onClick={() => handleOpenWADialog(ticket)}
                           className="h-8 w-8 text-zinc-400 hover:text-emerald-500 dark:hover:text-emerald-400 border border-zinc-200 dark:border-zinc-800"
+                          title="Pratinjau Notifikasi WA"
                         >
                           <MessageCircle className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => setSelectedAuditTicket({ id: ticket.id, ticketNumber: ticket.ticketNumber })}
+                          className="h-8 w-8 text-zinc-400 hover:text-indigo-500 dark:hover:text-indigo-400 border border-zinc-200 dark:border-zinc-800"
+                          title="Lihat Riwayat & Audit Log"
+                        >
+                          <History className="h-4 w-4" />
                         </Button>
                       </div>
                     </td>
@@ -281,6 +293,15 @@ export default function TicketsClient({ initialTickets, vendors }: TicketsClient
           isOpen={isWADialogOpen}
           onOpenChange={setIsWADialogOpen}
           ticket={selectedWATicket}
+        />
+      )}
+
+      {selectedAuditTicket && (
+        <AuditLogDialog
+          isOpen={!!selectedAuditTicket}
+          onOpenChange={(open) => !open && setSelectedAuditTicket(null)}
+          ticketId={selectedAuditTicket.id}
+          ticketNumber={selectedAuditTicket.ticketNumber}
         />
       )}
     </div>
