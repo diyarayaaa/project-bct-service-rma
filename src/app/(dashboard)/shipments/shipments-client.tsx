@@ -485,16 +485,29 @@ export default function ShipmentsClient({
                             <Eye className="h-3.5 w-3.5" />
                             Detail
                           </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => {
-                              toast.info("Fitur Print Surat Jalan & Alamat akan hadir di Issue #08");
-                            }}
-                            className="h-8 w-8 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50"
-                          >
-                            <Printer className="h-4 w-4" />
-                          </Button>
+                          <div className="relative group">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 border border-zinc-200 dark:border-zinc-800"
+                            >
+                              <Printer className="h-4 w-4" />
+                            </Button>
+                            <div className="absolute right-0 bottom-full mb-1 hidden group-hover:block bg-zinc-900 text-white rounded-lg shadow-lg py-1 text-[10px] w-28 z-50">
+                              <button
+                                onClick={() => window.open(`/print/surat-jalan/${note.suratJalanNumber}`, "_blank")}
+                                className="w-full text-left px-3 py-1.5 hover:bg-zinc-800 font-semibold"
+                              >
+                                Surat Jalan A4
+                              </button>
+                              <button
+                                onClick={() => window.open(`/print/label/${note.suratJalanNumber}`, "_blank")}
+                                className="w-full text-left px-3 py-1.5 hover:bg-zinc-800 font-semibold"
+                              >
+                                Label Alamat A6
+                              </button>
+                            </div>
+                          </div>
                         </div>
                       </td>
                     </tr>
@@ -577,7 +590,29 @@ export default function ShipmentsClient({
                 </div>
               </div>
 
-              <DialogFooter>
+              <DialogFooter className="sm:justify-between gap-2">
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      window.open(`/print/surat-jalan/${activeNote.suratJalanNumber}`, "_blank");
+                    }}
+                    className="border-zinc-200 dark:border-zinc-800 text-xs font-semibold flex items-center gap-1.5"
+                  >
+                    <Printer className="h-3.5 w-3.5" />
+                    Cetak Surat Jalan
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      window.open(`/print/label/${activeNote.suratJalanNumber}`, "_blank");
+                    }}
+                    className="border-zinc-200 dark:border-zinc-800 text-xs font-semibold flex items-center gap-1.5"
+                  >
+                    <Printer className="h-3.5 w-3.5 text-indigo-500" />
+                    Cetak Label Alamat
+                  </Button>
+                </div>
                 <Button
                   onClick={() => setIsDetailOpen(false)}
                   className="bg-zinc-900 dark:bg-zinc-50 text-zinc-50 dark:text-zinc-900 font-bold"

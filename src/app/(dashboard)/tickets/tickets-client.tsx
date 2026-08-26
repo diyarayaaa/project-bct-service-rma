@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, ClipboardList, User, Calendar, Edit, Tag } from "lucide-react";
+import { Search, ClipboardList, User, Calendar, Edit, Tag, Printer, FileText } from "lucide-react";
 import StatusDialog from "@/components/tickets/status-dialog";
 
 interface Customer {
@@ -205,15 +205,40 @@ export default function TicketsClient({ initialTickets, vendors }: TicketsClient
                       </div>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleOpenStatusDialog(ticket)}
-                        className="border-zinc-200 dark:border-zinc-800 text-xs font-semibold flex items-center gap-1.5 ml-auto bg-white dark:bg-zinc-900"
-                      >
-                        <Edit className="h-3.5 w-3.5" />
-                        Update Status
-                      </Button>
+                      <div className="flex items-center justify-end gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleOpenStatusDialog(ticket)}
+                          className="border-zinc-200 dark:border-zinc-800 text-xs font-semibold flex items-center gap-1.5 bg-white dark:bg-zinc-900"
+                        >
+                          <Edit className="h-3.5 w-3.5" />
+                          Update Status
+                        </Button>
+                        <div className="relative group">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 border border-zinc-200 dark:border-zinc-800"
+                          >
+                            <Printer className="h-4 w-4" />
+                          </Button>
+                          <div className="absolute right-0 bottom-full mb-1 hidden group-hover:block bg-zinc-900 text-white rounded-lg shadow-lg py-1 text-[10px] w-24 z-50">
+                            <button
+                              onClick={() => window.open(`/print/receipt/${ticket.ticketNumber}?format=thermal`, "_blank")}
+                              className="w-full text-left px-3 py-1.5 hover:bg-zinc-800 font-semibold"
+                            >
+                              Struk Thermal
+                            </button>
+                            <button
+                              onClick={() => window.open(`/print/receipt/${ticket.ticketNumber}?format=a4`, "_blank")}
+                              className="w-full text-left px-3 py-1.5 hover:bg-zinc-800 font-semibold"
+                            >
+                              Faktur A4
+                            </button>
+                          </div>
+                        </div>
+                      </div>
                     </td>
                   </tr>
                 ))
