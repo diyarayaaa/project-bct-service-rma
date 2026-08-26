@@ -10,7 +10,7 @@ import Link from "next/link";
 import { verifyJWT } from "@/lib/auth";
 import { logoutAction } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
-import { User, LogOut, LayoutGrid, Building2, Users, Settings2, FileText, Ticket, Truck } from "lucide-react";
+import { User, LogOut, LayoutGrid, Building2, Users, Settings2, FileText, Ticket, Truck, ClipboardList, BarChart3 } from "lucide-react";
 
 export default async function DashboardLayout({
   children,
@@ -26,6 +26,8 @@ export default async function DashboardLayout({
     { label: "Pendaftaran (Intake)", href: "/intake", icon: FileText },
     { label: "Daftar Tiket", href: "/tickets", icon: Ticket },
     { label: "Pengiriman Vendor", href: "/shipments", icon: Truck },
+    { label: "Laporan WA RMA", href: "/reports/wa-operational", icon: ClipboardList },
+    { label: "Laporan WA Sales", href: "/reports/wa-sales", icon: BarChart3 },
     { label: "Vendors", href: "/vendors", icon: Building2 },
     { label: "Customers", href: "/customers", icon: Users },
     { label: "Preset Options", href: "/presets", icon: Settings2 },
