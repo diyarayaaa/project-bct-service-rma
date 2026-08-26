@@ -64,7 +64,7 @@ export default function SalesReportClient({
         <div>
           <h2 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
             <BarChart3 className="h-6 w-6 text-emerald-500" />
-            Laporan WA Sales (`LAPORAN_WA_SALES`)
+            Laporan WA Sales <span className="text-xs font-mono font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-900/50">LAPORAN_WA_SALES</span>
           </h2>
           <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
             Generator laporan khusus sales untuk inventaris stok toko (STOCK BCT / GHITP).
