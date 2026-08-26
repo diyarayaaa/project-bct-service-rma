@@ -318,3 +318,104 @@ export async function updateTicketStatusAction(
     return { success: false, error: "Gagal menyimpan perubahan status tiket." };
   }
 }
+
+export interface UpdateTicketDetailsInput {
+  customerName: string;
+  customerPhone: string;
+  deviceType?: DeviceType;
+  deviceName: string;
+  serialNumber: string;
+  complaint: string;
+  accessories?: string[];
+  notes?: string | null;
+  estimatedCompletionDate?: Date | string | null;
+  estimatedCost?: number;
+  dpAmount?: number;
+  technicianId?: string;
+}
+
+export async function updateTicketDetailsAction(
+  ticketId: string,
+  input: UpdateTicketDetailsInput
+): Promise<ActionResponse> {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("auth_token")?.value;
+    const currentUser = token ? await verifyJWT(token) : null;
+
+    const oldTicket = await db.serviceTicket.findUnique({
+      where: { id: ticketId },
+      include: { customer: true },
+    });
+
+    if (!oldTicket) {
+      return { success: false, error: "Tiket tidak ditemukan." };
+    }
+
+    const formattedName = formatCustomerName(input.customerName);
+
+    // Update customer name & phone
+    await db.customer.update({
+      where: { id: oldTicket.customerId },
+      data: {
+        name: formattedName,
+        phone: input.customerPhone,
+      },
+    });
+
+    const estCost = input.estimatedCost !== undefined ? input.estimatedCost : Number(oldTicket.estimatedCost);
+    const dp = input.dpAmount !== undefined ? input.dpAmount : Number(oldTicket.dpAmount);
+    const remaining = Math.max(0, estCost - dp);
+
+    const updateData: Prisma.ServiceTicketUpdateInput = {
+      deviceName: input.deviceName.toUpperCase(),
+      serialNumber: input.serialNumber.toUpperCase(),
+      complaint: input.complaint,
+      accessories: input.accessories || oldTicket.accessories,
+      notes: input.notes !== undefined ? input.notes : oldTicket.notes,
+      estimatedCompletionDate: input.estimatedCompletionDate
+        ? new Date(input.estimatedCompletionDate)
+        : oldTicket.estimatedCompletionDate,
+      estimatedCost: new Prisma.Decimal(estCost),
+      dpAmount: new Prisma.Decimal(dp),
+      remainingCost: new Prisma.Decimal(remaining),
+    };
+
+    if (input.deviceType) {
+      updateData.deviceType = input.deviceType;
+    }
+
+    if (input.technicianId) {
+      updateData.technician = { connect: { id: input.technicianId } };
+    }
+
+    const updatedTicket = await db.serviceTicket.update({
+      where: { id: ticketId },
+      data: updateData,
+      include: { customer: true, technician: true },
+    });
+
+    // Write Audit Log
+    const desc = `Data tiket diperbarui oleh ${currentUser?.username || "System"} (Customer: ${oldTicket.customer.name} -> ${formattedName})`;
+    await db.auditLog.create({
+      data: {
+        ticketId,
+        userId: currentUser?.id || null,
+        action: "UPDATE_DETAILS",
+        description: desc,
+        previousData: JSON.parse(JSON.stringify(oldTicket)),
+        newData: JSON.parse(JSON.stringify(updatedTicket)),
+      },
+    });
+
+    revalidatePath("/tickets");
+    revalidatePath("/customers");
+    revalidatePath("/");
+
+    return { success: true, data: JSON.parse(JSON.stringify(updatedTicket)) };
+  } catch (error) {
+    console.error("Update Ticket Details Error:", error);
+    return { success: false, error: "Gagal memperbarui detail tiket." };
+  }
+}
+

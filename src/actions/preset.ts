@@ -63,3 +63,32 @@ export async function deletePresetAction(id: string): Promise<ActionResponse> {
     return { success: false, error: "Gagal menghapus preset." };
   }
 }
+
+export async function updatePresetAction(
+  id: string,
+  category: string,
+  label: string,
+  deviceType?: DeviceType | null
+): Promise<ActionResponse> {
+  if (!category || !label) {
+    return { success: false, error: "Kategori dan label preset wajib diisi." };
+  }
+
+  try {
+    const updated = await db.presetOption.update({
+      where: { id },
+      data: {
+        category,
+        label: label.trim(),
+        deviceType: deviceType || null,
+      },
+    });
+
+    revalidatePath("/presets");
+    return { success: true, data: updated };
+  } catch (error) {
+    console.error("Update Preset Error:", error);
+    return { success: false, error: "Gagal memperbarui preset." };
+  }
+}
+

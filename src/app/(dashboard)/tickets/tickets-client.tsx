@@ -7,6 +7,8 @@ import { Search, ClipboardList, User, Calendar, Edit, Tag, Printer, MessageCircl
 import StatusDialog from "@/components/tickets/status-dialog";
 import WhatsAppDialog from "@/components/tickets/whatsapp-dialog";
 import AuditLogDialog from "@/components/tickets/audit-log-dialog";
+import EditTicketDialog from "@/components/tickets/edit-ticket-dialog";
+import { useRouter } from "next/navigation";
 
 interface Customer {
   id: string;
@@ -67,6 +69,8 @@ export default function TicketsClient({ initialTickets, vendors }: TicketsClient
   const [isWADialogOpen, setIsWADialogOpen] = useState(false);
   const [selectedWATicket, setSelectedWATicket] = useState<Ticket | null>(null);
   const [selectedAuditTicket, setSelectedAuditTicket] = useState<{ id: string; ticketNumber: string } | null>(null);
+  const [ticketToEdit, setTicketToEdit] = useState<Ticket | null>(null);
+  const router = useRouter();
 
   const handleOpenWADialog = (ticket: Ticket) => {
     setSelectedWATicket(ticket);
@@ -217,12 +221,20 @@ export default function TicketsClient({ initialTickets, vendors }: TicketsClient
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => setTicketToEdit(ticket)}
+                          className="h-8 w-8 text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-400 border border-zinc-200 dark:border-zinc-800"
+                          title="Edit Data Tiket"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
                           variant="outline"
                           size="sm"
                           onClick={() => handleOpenStatusDialog(ticket)}
                           className="border-zinc-200 dark:border-zinc-800 text-xs font-semibold flex items-center gap-1.5 bg-white dark:bg-zinc-900"
                         >
-                          <Edit className="h-3.5 w-3.5" />
                           Update Status
                         </Button>
                         <div className="relative group">
@@ -302,6 +314,19 @@ export default function TicketsClient({ initialTickets, vendors }: TicketsClient
           onOpenChange={(open) => !open && setSelectedAuditTicket(null)}
           ticketId={selectedAuditTicket.id}
           ticketNumber={selectedAuditTicket.ticketNumber}
+        />
+      )}
+
+      {ticketToEdit && (
+        <EditTicketDialog
+          key={ticketToEdit.id}
+          isOpen={!!ticketToEdit}
+          onOpenChange={(open) => !open && setTicketToEdit(null)}
+          ticket={ticketToEdit}
+          onSuccess={() => {
+            setTicketToEdit(null);
+            router.refresh();
+          }}
         />
       )}
     </div>

@@ -5,7 +5,9 @@ import { toggleInternalCustomerAction, deleteCustomerAction } from "@/actions/cu
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { Search, Trash2, User, Phone, ShieldCheck, History, Calendar } from "lucide-react";
+import { Search, Trash2, User, Phone, ShieldCheck, History, Calendar, Edit } from "lucide-react";
+import EditCustomerDialog from "@/components/customers/edit-customer-dialog";
+import { useRouter } from "next/navigation";
 
 interface Customer {
   id: string;
@@ -23,6 +25,8 @@ interface CustomersClientProps {
 export default function CustomersClient({ initialCustomers }: CustomersClientProps) {
   const [customers, setCustomers] = useState<Customer[]>(initialCustomers);
   const [search, setSearch] = useState("");
+  const [customerToEdit, setCustomerToEdit] = useState<Customer | null>(null);
+  const router = useRouter();
 
   const filteredCustomers = customers.filter((c) => {
     const q = search.toLowerCase();
@@ -149,14 +153,26 @@ export default function CustomersClient({ initialCustomers }: CustomersClientPro
                       </div>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDelete(customer.id, customer.name)}
-                        className="h-8 w-8 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-950/20"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      <div className="flex items-center justify-end gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => setCustomerToEdit(customer)}
+                          className="h-8 w-8 text-zinc-500 hover:text-indigo-600 dark:text-zinc-400 dark:hover:text-indigo-400"
+                          title="Edit Customer"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleDelete(customer.id, customer.name)}
+                          className="h-8 w-8 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-950/20"
+                          title="Hapus Customer"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -165,6 +181,19 @@ export default function CustomersClient({ initialCustomers }: CustomersClientPro
           </table>
         </div>
       </div>
+
+      {customerToEdit && (
+        <EditCustomerDialog
+          key={customerToEdit.id}
+          isOpen={!!customerToEdit}
+          onOpenChange={(open) => !open && setCustomerToEdit(null)}
+          customer={customerToEdit}
+          onSuccess={() => {
+            setCustomerToEdit(null);
+            router.refresh();
+          }}
+        />
+      )}
     </div>
   );
 }

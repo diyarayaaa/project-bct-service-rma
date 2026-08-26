@@ -5,7 +5,10 @@ import { createPresetAction, deletePresetAction } from "@/actions/preset";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { Plus, Trash2, AlertTriangle, Package, CheckSquare } from "lucide-react";
+import { Plus, Trash2, AlertTriangle, Package, CheckSquare, Edit } from "lucide-react";
+import EditPresetDialog from "@/components/presets/edit-preset-dialog";
+import { useRouter } from "next/navigation";
+import { DeviceType } from "@prisma/client";
 
 interface PresetOption {
   id: string;
@@ -23,7 +26,9 @@ export default function PresetsClient({ initialPresets }: PresetsClientProps) {
   const [presets, setPresets] = useState<PresetOption[]>(initialPresets);
   const [activeTab, setActiveTab] = useState<"COMPLAINT" | "ACCESSORY">("COMPLAINT");
   const [label, setLabel] = useState("");
+  const [presetToEdit, setPresetToEdit] = useState<PresetOption | null>(null);
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   const activePresets = presets.filter((p) => p.category === activeTab);
 
@@ -138,18 +143,46 @@ export default function PresetsClient({ initialPresets }: PresetsClientProps) {
                 <CheckSquare className="h-4 w-4 text-emerald-500 shrink-0" />
                 <span>{preset.label}</span>
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => handleDelete(preset.id, preset.label)}
-                className="h-8 w-8 text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 shrink-0"
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
+              <div className="flex items-center gap-1 shrink-0">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setPresetToEdit(preset)}
+                  className="h-8 w-8 text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-400"
+                  title="Edit Preset"
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleDelete(preset.id, preset.label)}
+                  className="h-8 w-8 text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20"
+                  title="Hapus Preset"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           ))
         )}
       </div>
+
+      {presetToEdit && (
+        <EditPresetDialog
+          key={presetToEdit.id}
+          isOpen={!!presetToEdit}
+          onOpenChange={(open) => !open && setPresetToEdit(null)}
+          preset={{
+            ...presetToEdit,
+            deviceType: presetToEdit.deviceType as DeviceType | null,
+          }}
+          onSuccess={() => {
+            setPresetToEdit(null);
+            router.refresh();
+          }}
+        />
+      )}
     </div>
   );
 }

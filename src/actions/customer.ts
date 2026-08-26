@@ -51,3 +51,30 @@ export async function deleteCustomerAction(id: string): Promise<ActionResponse> 
     return { success: false, error: "Gagal menghapus customer." };
   }
 }
+
+export async function updateCustomerAction(
+  id: string,
+  data: { name: string; phone: string; isInternalStock?: boolean }
+): Promise<ActionResponse> {
+  try {
+    const formattedName = data.name.trim().toUpperCase();
+
+    await db.customer.update({
+      where: { id },
+      data: {
+        name: formattedName,
+        phone: data.phone.trim(),
+        isInternalStock: data.isInternalStock,
+      },
+    });
+
+    revalidatePath("/customers");
+    revalidatePath("/tickets");
+    revalidatePath("/");
+    return { success: true };
+  } catch (error) {
+    console.error("Update Customer Error:", error);
+    return { success: false, error: "Gagal memperbarui data customer." };
+  }
+}
+
